@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>ATTİ Raylı Sistem — Test ve Karşılaştırma v4.0</title>
+<title>ATTİ Raylı Sistem — Detaylı Test + Karşılaştırma v4.0</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
@@ -12,7 +12,7 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 .subtitle { color: #6b7280; text-align: center; font-size: 14px; margin-bottom: 20px; }
 .hidden { display: none !important; }
 
-/* MOD SEÇİM */
+/* MOD SEÇİMİ */
 .mode-options { display: grid; gap: 15px; margin: 25px 0; }
 .mode-option { border: 3px solid #e0e7ff; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: #f8fafc; }
 .mode-option:hover { border-color: #a5b4fc; background: #f0f4ff; }
@@ -31,7 +31,7 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 /* DOSYA YÜKLEME */
 .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
 @media (max-width: 768px) { .upload-grid { grid-template-columns: 1fr; } }
-.upload-box { border: 3px dashed #a5b4fc; border-radius: 16px; padding: 30px 20px; text-align: center; background: #f0f4ff; transition: all 0.3s; cursor: pointer; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.upload-box { border: 3px dashed #a5b4fc; border-radius: 16px; padding: 30px 20px; text-align: center; background: #f0f4ff; transition: all 0.3s; cursor: pointer; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .upload-box:hover { border-color: #6366f1; background: #e0e7ff; }
 .upload-box.loaded { border-color: #22c55e; background: #dcfce7; border-style: solid; }
 .upload-box.dragover { border-color: #f59e0b; background: #fef3c7; }
@@ -40,6 +40,11 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 .upload-hint { font-size: 12px; color: #6b7280; }
 .upload-filename { font-size: 13px; color: #166534; font-weight: 700; margin-top: 10px; word-break: break-word; }
 .file-size { font-size: 11px; color: #6b7280; margin-top: 4px; }
+.upload-area { border: 3px dashed #a5b4fc; border-radius: 16px; padding: 40px; text-align: center; background: #f0f4ff; transition: all 0.3s; cursor: pointer; margin-top: 20px; }
+.upload-area:hover { border-color: #6366f1; background: #e0e7ff; }
+.upload-area.dragover { border-color: #22c55e; background: #dcfce7; }
+.upload-icon-big { font-size: 60px; margin-bottom: 15px; }
+.upload-text { color: #4338ca; font-weight: 700; font-size: 16px; margin-bottom: 8px; }
 
 /* BUTONLAR */
 .btn { display: inline-block; padding: 14px 32px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; }
@@ -54,35 +59,60 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 .btn-danger { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
 .btn-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; }
 
-/* İLERLEME */
+.file-info { background: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; border-radius: 8px; margin-top: 15px; color: #166534; }
 .progress { margin-top: 20px; background: #e5e7eb; border-radius: 10px; height: 12px; overflow: hidden; }
 .progress-bar { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.3s; width: 0%; }
 .progress-text { text-align: center; margin-top: 10px; color: #4338ca; font-weight: 600; font-size: 14px; }
 
-/* KARŞILAŞTIRMA SEÇENEKLERİ */
-.compare-options { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin: 15px 0; }
-.compare-options h3 { color: #92400e; font-size: 16px; margin-bottom: 12px; }
-.compare-option { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 14px; color: #78350f; }
-.compare-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: #f59e0b; cursor: pointer; }
-
 /* SONUÇ */
-.result-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+.result-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
 .stat-card { padding: 20px; border-radius: 12px; text-align: center; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
 .stat-ok { background: linear-gradient(135deg, #059669, #10b981); }
 .stat-err { background: linear-gradient(135deg, #dc2626, #ef4444); }
 .stat-total { background: linear-gradient(135deg, #2563eb, #3b82f6); }
 .stat-rate { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
 .stat-warn { background: linear-gradient(135deg, #f59e0b, #d97706); }
-.stat-number { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.stat-number { font-size: 38px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
 .stat-label { font-size: 12px; opacity: 0.95; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
 .status-banner { padding: 20px; border-radius: 12px; text-align: center; font-size: 16px; font-weight: 700; margin-bottom: 20px; }
 .status-success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
 .status-error { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
 .status-warn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
 
+/* FİLTRE ÇUBUĞU */
+.filter-bar { background: #f0f4ff; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filter-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: 2px solid #c7d2fe; background: white; color: #4338ca; transition: all 0.15s; }
+.filter-btn:hover { background: #e0e7ff; }
+.filter-btn.active { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-color: #4338ca; }
+.filter-btn.filter-error { border-color: #fca5a5; color: #b91c1c; }
+.filter-btn.filter-error.active { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; border-color: #991b1b; }
+
+/* TEST LİSTESİ */
+.test-list { background: #0f172a; border-radius: 12px; padding: 20px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; max-height: 600px; overflow-y: auto; }
+.section-title { color: #60a5fa; font-size: 14px; font-weight: 700; margin: 20px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #1e40af; position: sticky; top: -20px; background: #0f172a; padding-top: 10px; z-index: 10; }
+.section-title:first-child { margin-top: 0; }
+.section-count { display: inline-block; background: #1e40af; color: white; padding: 2px 8px; border-radius: 6px; font-size: 11px; margin-left: 8px; }
+.test-item { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; font-size: 12px; transition: all 0.2s; }
+.test-item-ok { background: #064e3b; color: #4ade80; }
+.test-item-err { background: #7f1d1d; color: #fca5a5; }
+.test-item-slow { background: #78350f; color: #fbbf24; }
+.test-name { flex: 1; word-break: break-word; }
+.test-time { color: #94a3b8; font-size: 10px; white-space: nowrap; padding: 2px 6px; background: #1e293b; border-radius: 4px; }
+.test-error { color: #fecaca; font-size: 11px; margin-top: 6px; padding: 6px 10px; background: #450a0a; border-radius: 4px; font-family: monospace; word-break: break-word; white-space: pre-wrap; }
+.info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #1e40af; font-size: 13px; line-height: 1.7; }
+
+/* PERFORMANS */
+.perf-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; }
+.perf-table th { background: #1e40af; color: white; padding: 10px; text-align: left; font-size: 12px; }
+.perf-table td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; }
+.perf-table tr:hover { background: #f0f4ff; }
+.perf-slow { background: #fee2e2 !important; color: #991b1b; font-weight: 700; }
+.perf-warn { background: #fef3c7 !important; color: #92400e; }
+.perf-ok { background: #dcfce7 !important; color: #166534; }
+
 /* KARŞILAŞTIRMA RAPORU */
 .compare-report { background: #0f172a; border-radius: 12px; padding: 20px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; }
-.compare-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1e293b; border-radius: 8px; margin-bottom: 15px; }
+.compare-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1e293b; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 .compare-title { color: #60a5fa; font-size: 16px; font-weight: 700; }
 .compare-versions { color: #94a3b8; font-size: 11px; }
 
@@ -98,25 +128,23 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 .diff-content { flex: 1; word-break: break-word; }
 .diff-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); }
 
-/* TABLO */
-.compare-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-.compare-table th { background: #1e40af; color: white; padding: 10px; text-align: left; }
-.compare-table td { padding: 8px 10px; border-bottom: 1px solid #334155; color: #e2e8f0; }
-.compare-table tr:hover { background: #1e293b; }
-.cell-ok { color: #4ade80; }
-.cell-err { color: #f87171; }
-.cell-warn { color: #fbbf24; }
-
 /* UYARI PANELİ */
 .warning-panel { background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 .warning-panel h3 { color: #991b1b; font-size: 16px; margin-bottom: 12px; }
 .warning-item { padding: 10px; background: white; border-left: 4px solid #dc2626; border-radius: 6px; margin-bottom: 8px; font-size: 13px; color: #450a0a; }
 .warning-item strong { color: #991b1b; }
+.warning-item code { background: #fee2e2; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 12px; }
 
 .success-panel { background: #f0fdf4; border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 .success-panel h3 { color: #166534; font-size: 16px; margin-bottom: 12px; }
 
-.info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #1e40af; font-size: 13px; line-height: 1.7; }
+/* SEKME */
+.tab-bar { display: flex; gap: 4px; margin-bottom: 0; flex-wrap: wrap; }
+.tab-btn { padding: 12px 24px; border: 2px solid #e5e7eb; border-bottom: none; border-radius: 10px 10px 0 0; background: #f9fafb; color: #4b5563; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+.tab-btn:hover { background: #eff6ff; }
+.tab-btn.active { background: white; color: #4338ca; border-color: #4338ca; position: relative; top: 2px; }
+.tab-content { display: none; padding: 20px; border: 2px solid #4338ca; border-radius: 0 10px 10px 10px; background: white; }
+.tab-content.active { display: block; }
 </style>
 </head>
 <body>
@@ -126,33 +154,61 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
     <div id="modeScreen">
         <div class="card">
             <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 60px;">🔍</div>
+                <div style="font-size: 60px;">🧪</div>
                 <h1>ATTİ Raylı Sistem</h1>
-                <p class="subtitle">Test & Karşılaştırma Modülü v4.0</p>
+                <p class="subtitle">Detaylı Test + Karşılaştırma Modülü v4.0</p>
             </div>
 
             <div class="info-box">
                 <strong>📌 Ne yapmak istiyorsunuz?</strong><br>
-                Yeni bir sürüm mü test etmek istiyorsunuz, yoksa <strong>eski ve yeni sürümü karşılaştırıp</strong> neyin bozulduğunu mu görmek istiyorsunuz?
+                Tek dosyayı mı test etmek istiyorsunuz, yoksa <strong>eski ve yeni sürümü karşılaştırıp</strong> neyin bozulduğunu mu görmek istiyorsunuz?
             </div>
 
             <div class="mode-options">
-                <label class="mode-option" id="modeSingle" onclick="selectMode('single')">
-                    <input type="radio" name="testMode" value="single">
+                <label class="mode-option" id="modeBasic" onclick="selectMode('basic')">
+                    <input type="radio" name="testMode" value="basic">
                     <div class="mode-header">
-                        <div class="mode-icon">📄</div>
+                        <div class="mode-icon">⚡</div>
                         <div>
-                            <div class="mode-title">Tek Dosya Test</div>
+                            <div class="mode-title">Temel Test (Tek Dosya)</div>
                             <span class="mode-badge badge-hizli">HIZLI</span>
                         </div>
                     </div>
                     <div class="mode-desc">
-                        Sadece <code>index.html</code>'i test et. Fonksiyonlar, elementler ve mantık testleri. <strong>~250 test, 30 saniye.</strong>
+                        Tek dosya temel testler. Fonksiyonların varlığı, HTML elementleri. <strong>~80 test, 15 saniye.</strong>
                     </div>
                 </label>
 
-                <label class="mode-option selected" id="modeCompare" onclick="selectMode('compare')">
-                    <input type="radio" name="testMode" value="compare" checked>
+                <label class="mode-option selected" id="modeDetailed" onclick="selectMode('detailed')">
+                    <input type="radio" name="testMode" value="detailed" checked>
+                    <div class="mode-header">
+                        <div class="mode-icon">🔬</div>
+                        <div>
+                            <div class="mode-title">Detaylı Test (Tek Dosya)</div>
+                            <span class="mode-badge badge-detayli">ÖNERİLEN</span>
+                        </div>
+                    </div>
+                    <div class="mode-desc">
+                        Fonksiyonlar + mantık + hesaplama + regex + Türkçe karakter testleri. <strong>~250 test, 30 saniye.</strong>
+                    </div>
+                </label>
+
+                <label class="mode-option" id="modeExpert" onclick="selectMode('expert')">
+                    <input type="radio" name="testMode" value="expert">
+                    <div class="mode-header">
+                        <div class="mode-icon">🎓</div>
+                        <div>
+                            <div class="mode-title">Uzman Test (Tek Dosya)</div>
+                            <span class="mode-badge badge-uzman">KAPSAMLI</span>
+                        </div>
+                    </div>
+                    <div class="mode-desc">
+                        Detaylı + performans ölçümü + kenar durumlar + hata yönetimi. <strong>~400 test, 60 saniye.</strong>
+                    </div>
+                </label>
+
+                <label class="mode-option" id="modeCompare" onclick="selectMode('compare')">
+                    <input type="radio" name="testMode" value="compare">
                     <div class="mode-header">
                         <div class="mode-icon">🔀</div>
                         <div>
@@ -161,7 +217,7 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
                         </div>
                     </div>
                     <div class="mode-desc">
-                        Eski ve yeni <code>index.html</code>'i karşılaştır. Kaybolan fonksiyonları, elementleri, event handler'ları bulur. <strong>Bozulan yerleri otomatik tespit eder!</strong>
+                        Eski ve yeni <code>index.html</code>'i karşılaştır. <strong>Kaybolan fonksiyonları, elementleri, event handler'ları</strong> bulur. Bozulan yerleri otomatik tespit eder!
                     </div>
                 </label>
             </div>
@@ -184,16 +240,16 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 
             <!-- Tek dosya modu -->
             <div id="singleUploadBox" class="hidden">
-                <div class="upload-box" id="singleFileBox">
-                    <div class="upload-icon">📄</div>
-                    <div class="upload-label">index.html seçin</div>
-                    <div class="upload-hint">veya buraya sürükleyin</div>
+                <div class="upload-area" id="singleFileBox">
+                    <div class="upload-icon-big">📄</div>
+                    <div class="upload-text">index.html dosyasını seçin</div>
+                    <div class="upload-hint">veya dosyayı buraya sürükleyip bırakın</div>
                     <div id="singleFileInfo" class="hidden">
                         <div class="upload-filename" id="singleFileName"></div>
                         <div class="file-size" id="singleFileSize"></div>
                     </div>
                 </div>
-                <input type="file" id="singleFileInput" accept=".html,.htm" style="display:none;">
+                <input type="file" id="singleFileInput" accept=".html,.htm,.txt" style="display:none;">
             </div>
 
             <!-- Karşılaştırma modu -->
@@ -218,8 +274,8 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
                         </div>
                     </div>
                 </div>
-                <input type="file" id="oldFileInput" accept=".html,.htm" style="display:none;">
-                <input type="file" id="newFileInput" accept=".html,.htm" style="display:none;">
+                <input type="file" id="oldFileInput" accept=".html,.htm,.txt" style="display:none;">
+                <input type="file" id="newFileInput" accept=".html,.htm,.txt" style="display:none;">
             </div>
 
             <div id="progressSection" class="hidden" style="margin-top: 20px;">
@@ -238,13 +294,13 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
                 <p class="subtitle" id="testDate"></p>
             </div>
 
-            <!-- Uyarı Paneli (varsa) -->
+            <!-- Uyarı Paneli (karşılaştırmada kayıp varsa) -->
             <div id="warningPanel" class="warning-panel hidden">
                 <h3>🚨 KRİTİK SORUNLAR TESPİT EDİLDİ!</h3>
                 <div id="warningList"></div>
             </div>
 
-            <!-- Başarı Paneli -->
+            <!-- Başarı Paneli (karşılaştırmada kayıp yoksa) -->
             <div id="successPanel" class="success-panel hidden">
                 <h3>✅ Her şey yolunda!</h3>
                 <p style="color: #166534; font-size: 14px;">Eski sürümdeki tüm özellikler yeni sürümde de mevcut.</p>
@@ -253,11 +309,44 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
             <div class="result-summary" id="summary"></div>
             <div id="statusBanner"></div>
 
-            <!-- Karşılaştırma detay raporu -->
-            <div id="compareReport" class="compare-report hidden"></div>
+            <!-- SEKME SİSTEMİ -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('tests', this)">🧪 Test Sonuçları</button>
+                <button class="tab-btn" id="compareTab" onclick="switchTab('compare', this)" style="display:none;">🔀 Karşılaştırma Raporu</button>
+            </div>
 
-            <!-- Test listesi -->
-            <div id="testList" class="compare-report"></div>
+            <!-- Test Sonuçları Sekmesi -->
+            <div id="tab-tests" class="tab-content active">
+                <div class="filter-bar">
+                    <span style="font-size: 12px; font-weight: 700; color: #4338ca; margin-right: 8px;">🔍 Filtre:</span>
+                    <button class="filter-btn active" onclick="filterResults('all', this)">Tümü</button>
+                    <button class="filter-btn" onclick="filterResults('ok', this)">✅ Başarılı</button>
+                    <button class="filter-btn filter-error" onclick="filterResults('error', this)">❌ Hatalı</button>
+                    <button class="filter-btn" onclick="filterResults('slow', this)">⏱️ Yavaş</button>
+                    <span style="margin-left: auto; font-size: 12px; color: #6b7280;">Toplam Süre: <strong id="totalDuration">-</strong></span>
+                </div>
+                <div class="test-list" id="testList"></div>
+            </div>
+
+            <!-- Karşılaştırma Raporu Sekmesi -->
+            <div id="tab-compare" class="tab-content">
+                <div id="compareReport" class="compare-report"></div>
+            </div>
+
+            <!-- Performans Tablosu (sadece expert modda) -->
+            <div id="perfSection" class="hidden" style="margin-top: 20px;">
+                <h3 style="color: #4338ca; font-size: 18px; margin-bottom: 10px;">⚡ Performans Ölçümleri (En Yavaş 20)</h3>
+                <table class="perf-table">
+                    <thead>
+                        <tr>
+                            <th>Fonksiyon</th>
+                            <th>Süre</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="perfTableBody"></tbody>
+                </table>
+            </div>
 
             <div class="btn-row">
                 <button class="btn btn-warning" onclick="copyAllResults()">📋 Sonuçları Kopyala</button>
@@ -271,13 +360,16 @@ h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
 
 <script>
 // ==================== DURUM ====================
-let testMode = 'compare';
+let testMode = 'detailed';
 let testResults = [];
+let currentFilter = 'all';
 let currentHTMLContent = '';
 let oldHTMLContent = '';
 let newHTMLContent = '';
 let iframeWindow = null;
 let compareData = null;
+let singleReady = false;
+let compareReady = false;
 
 // ==================== MOD SEÇİMİ ====================
 function selectMode(mode){
@@ -291,16 +383,19 @@ function proceedToUpload(){
     document.getElementById('modeScreen').classList.add('hidden');
     document.getElementById('uploadScreen').classList.remove('hidden');
     
-    if(testMode === 'single'){
-        document.getElementById('uploadTitle').textContent = 'Tek Dosya Test';
-        document.getElementById('uploadSubtitle').textContent = 'index.html dosyasını seçin';
-        document.getElementById('singleUploadBox').classList.remove('hidden');
-        document.getElementById('compareUploadBox').classList.add('hidden');
-    } else {
+    if(testMode === 'compare'){
         document.getElementById('uploadTitle').textContent = 'Karşılaştırmalı Test';
         document.getElementById('uploadSubtitle').textContent = 'Eski ve yeni index.html dosyalarını seçin';
         document.getElementById('singleUploadBox').classList.add('hidden');
         document.getElementById('compareUploadBox').classList.remove('hidden');
+    } else {
+        document.getElementById('uploadTitle').textContent = 'Tek Dosya Test';
+        document.getElementById('uploadSubtitle').textContent = 
+            testMode === 'basic' ? '⚡ Temel Test Modu (~80 test)' :
+            testMode === 'detailed' ? '🔬 Detaylı Test Modu (~250 test)' :
+            '🎓 Uzman Test Modu (~400 test)';
+        document.getElementById('singleUploadBox').classList.remove('hidden');
+        document.getElementById('compareUploadBox').classList.add('hidden');
     }
 }
 
@@ -349,9 +444,6 @@ setupUploadBox('oldFileBox', 'oldFileInput', 'oldFileInfo', 'oldFileName', 'oldF
 setupUploadBox('newFileBox', 'newFileInput', 'newFileInfo', 'newFileName', 'newFileSize', 
     (content) => { newHTMLContent = content; checkCompareReady(); });
 
-let singleReady = false;
-let compareReady = false;
-
 function checkSingleReady(){
     if(!singleReady && currentHTMLContent){
         singleReady = true;
@@ -393,15 +485,33 @@ async function runSingleTest(){
     try {
         updateProgress(10, '📄 HTML analiz ediliyor...');
         await sleep(150);
-        analyzeSingleFile(currentHTMLContent);
+        analyzeHTML(currentHTMLContent);
+        analyzeCDN(currentHTMLContent);
+        analyzeVariables(currentHTMLContent);
+        analyzeFunctionExistence(currentHTMLContent);
+        analyzeElements(currentHTMLContent);
         
         updateProgress(50, '🖼️ iframe yükleniyor...');
         await sleep(150);
-        await loadIframeInResult(currentHTMLContent);
+        await loadIframe(currentHTMLContent);
         
-        updateProgress(75, '🧠 Fonksiyon testleri...');
+        updateProgress(70, '🧠 Mantık testleri...');
         await sleep(150);
-        await runFunctionTests();
+        await testFunctionLogic();
+        await testCalculations();
+        await testRegexAndParse();
+        await testTurkishCharacters();
+        await testDataIntegrity();
+        
+        if(testMode === 'detailed' || testMode === 'expert'){
+            await testFiltering();
+            await testErrorHandling();
+        }
+        
+        if(testMode === 'expert'){
+            await testPerformance();
+            await testEdgeCases();
+        }
         
         updateProgress(100, '✅ Tamamlandı!');
         await sleep(300);
@@ -426,30 +536,46 @@ async function runCompareTest(){
         newFunctions: [],
         newElements: [],
         newVariables: [],
-        changedContent: []
+        oldSize: oldHTMLContent.length,
+        newSize: newHTMLContent.length
     };
     
     try {
         // 1. Eski dosyayı analiz et
-        updateProgress(15, '📜 Eski dosya analiz ediliyor...');
+        updateProgress(10, '📜 Eski dosya analiz ediliyor...');
         await sleep(200);
         const oldData = extractStructures(oldHTMLContent);
         
         // 2. Yeni dosyayı analiz et
-        updateProgress(35, '✨ Yeni dosya analiz ediliyor...');
+        updateProgress(25, '✨ Yeni dosya analiz ediliyor...');
         await sleep(200);
         const newData = extractStructures(newHTMLContent);
         
         // 3. Karşılaştır
-        updateProgress(55, '🔍 Karşılaştırılıyor...');
+        updateProgress(40, '🔍 Yapı karşılaştırılıyor...');
         await sleep(200);
         compareStructures(oldData, newData);
         
-        // 4. Yeni dosyayı iframe'de test et
-        updateProgress(75, '🧠 Yeni dosya test ediliyor...');
-        await sleep(200);
-        await loadIframeInResult(newHTMLContent);
-        await runFunctionTests();
+        // 4. Yeni dosyayı test et
+        updateProgress(55, '📄 Yeni dosya HTML testleri...');
+        await sleep(150);
+        analyzeHTML(newHTMLContent);
+        analyzeCDN(newHTMLContent);
+        analyzeVariables(newHTMLContent);
+        analyzeFunctionExistence(newHTMLContent);
+        analyzeElements(newHTMLContent);
+        
+        // 5. Yeni dosyayı iframe'de test et
+        updateProgress(75, '🖼️ iframe yükleniyor...');
+        await sleep(150);
+        await loadIframe(newHTMLContent);
+        
+        updateProgress(85, '🧠 Fonksiyon testleri...');
+        await sleep(150);
+        await testFunctionLogic();
+        await testCalculations();
+        await testTurkishCharacters();
+        await testDataIntegrity();
         
         updateProgress(100, '✅ Karşılaştırma tamamlandı!');
         await sleep(300);
@@ -470,7 +596,6 @@ function extractStructures(html){
         elementIds: new Set(),
         eventHandlers: new Set(),
         variables: new Set(),
-        sections: new Set(),
         htmlSize: html.length
     };
     
@@ -497,25 +622,18 @@ function extractStructures(html){
         data.elementIds.add(match[1]);
     }
     
-    // Event handler'ları çıkar (onclick, onchange vs.)
+    // Event handler'ları çıkar
     const eventPattern = /on(click|change|input|submit|keyup|keydown|load|error)="([^"]+)"/g;
     while((match = eventPattern.exec(html)) !== null){
-        // Fonksiyon adını çıkar (parantezden önceki kısım)
         const handler = match[2];
         const fnMatch = handler.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
         if(fnMatch) data.eventHandlers.add(fnMatch[1]);
     }
     
-    // Global değişkenler (let, var, const)
+    // Global değişkenler
     const varPattern = /(?:let|var|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g;
     while((match = varPattern.exec(html)) !== null){
         data.variables.add(match[1]);
-    }
-    
-    // Bölümler (section id'leri)
-    const sectionPattern = /<div[^>]*id="([^"]+)"[^>]*class="[^"]*section/g;
-    while((match = sectionPattern.exec(html)) !== null){
-        data.sections.add(match[1]);
     }
     
     return data;
@@ -553,95 +671,107 @@ function compareStructures(oldData, newData){
     
     // Yeni eklenenler
     newData.functions.forEach(fn => {
-        if(!oldData.functions.has(fn)){
-            compareData.newFunctions.push(fn);
-        }
+        if(!oldData.functions.has(fn)) compareData.newFunctions.push(fn);
     });
     
     newData.elementIds.forEach(id => {
-        if(!oldData.elementIds.has(id)){
-            compareData.newElements.push(id);
-        }
+        if(!oldData.elementIds.has(id)) compareData.newElements.push(id);
     });
     
     newData.variables.forEach(v => {
-        if(!oldData.variables.has(v)){
-            compareData.newVariables.push(v);
-        }
+        if(!oldData.variables.has(v)) compareData.newVariables.push(v);
     });
     
-    // Boyut karşılaştırması
-    compareData.oldSize = oldData.htmlSize;
-    compareData.newSize = newData.htmlSize;
     compareData.sizeChange = newData.htmlSize - oldData.htmlSize;
 }
 
-// ==================== HTML ANALİZ (TEK DOSYA) ====================
-function analyzeSingleFile(html){
-    // Kritik HTML öğeleri
-    test('DOCTYPE HTML5', () => {
-        if(!html.trim().toLowerCase().startsWith('<!doctype html>')) throw new Error('DOCTYPE eksik');
-    });
-    
-    test('lang="tr"', () => {
-        if(!html.includes('lang="tr"')) throw new Error('lang="tr" yok');
-    });
-    
-    test('UTF-8 charset', () => {
-        if(!html.toLowerCase().includes('charset="utf-8"')) throw new Error('charset UTF-8 değil');
-    });
-    
-    test('Viewport meta', () => {
-        if(!html.includes('name="viewport"')) throw new Error('viewport yok');
-    });
-    
-    test('Title etiketi', () => {
-        if(!html.match(/<title>[^<]+<\/title>/)) throw new Error('title yok');
-    });
-    
-    // CDN
-    test('Tailwind CSS', () => {
-        if(!html.includes('tailwindcss.com')) throw new Error('Tailwind yok');
-    });
-    
-    test('PDF.js', () => {
-        if(!html.includes('pdf.min.js')) throw new Error('PDF.js yok');
-    });
-    
-    test('Supabase JS', () => {
-        if(!html.includes('supabase-js')) throw new Error('Supabase yok');
-    });
-    
-    // Kritik değişkenler
-    test('SUPABASE_URL', () => {
-        if(!html.includes('SUPABASE_URL')) throw new Error('SUPABASE_URL yok');
-    });
-    
-    test('ADMIN_USERNAME', () => {
-        if(!html.includes('ADMIN_USERNAME')) throw new Error('ADMIN_USERNAME yok');
-    });
-    
-    test('data objesi', () => {
-        if(!html.match(/let\s+data\s*=\s*\{/)) throw new Error('data objesi yok');
-    });
-    
-    // Kritik fonksiyonlar
-    ['loadSession', 'doLogin', 'addPersonnel', 'updatePersonnelTable', 'updateStockTables', 'updateTaskPage'].forEach(fn => {
-        test('Fonksiyon: ' + fn, () => {
-            if(!new RegExp('function\\s+' + fn).test(html)) throw new Error(fn + ' yok');
+// ==================== HTML ANALİZ ====================
+function analyzeHTML(html){
+    section('📄 HTML Yapısı');
+    test('DOCTYPE HTML5', () => { if(!html.trim().toLowerCase().startsWith('<!doctype html>')) throw new Error('DOCTYPE eksik'); });
+    test('lang="tr"', () => { if(!html.match(/<html[^>]*lang="tr"/)) throw new Error('lang="tr" yok'); });
+    test('data-version', () => { if(!html.match(/data-version="\d+"/)) throw new Error('data-version yok'); });
+    test('UTF-8 charset', () => { if(!html.toLowerCase().includes('charset="utf-8"')) throw new Error('charset yok'); });
+    test('Viewport meta', () => { if(!html.includes('name="viewport"')) throw new Error('viewport yok'); });
+    test('Title etiketi', () => { if(!html.match(/<title>[^<]+<\/title>/)) throw new Error('title yok'); });
+    test('Script etiketleri (min 3)', () => { const c=(html.match(/<script/g)||[]).length; if(c<3) throw new Error('Az script: '+c); });
+    test('Style etiketi', () => { if(!html.includes('<style>')) throw new Error('style yok'); });
+}
+
+function analyzeCDN(html){
+    section('📦 CDN Kütüphaneleri');
+    test('Tailwind CSS', () => { if(!html.includes('tailwindcss.com')) throw new Error('Tailwind yok'); });
+    test('PDF.js', () => { if(!html.includes('pdf.min.js')) throw new Error('PDF.js yok'); });
+    test('Supabase JS', () => { if(!html.includes('supabase-js')) throw new Error('Supabase yok'); });
+}
+
+function analyzeVariables(html){
+    section('🔧 Değişkenler');
+    test('SUPABASE_URL', () => { if(!html.includes('SUPABASE_URL')) throw new Error('SUPABASE_URL yok'); });
+    test('SUPABASE_ANON_KEY', () => { if(!html.includes('SUPABASE_ANON_KEY')) throw new Error('Anon key yok'); });
+    test('ADMIN_USERNAME', () => { if(!html.includes('ADMIN_USERNAME')) throw new Error('ADMIN_USERNAME yok'); });
+    test('VIEWER_USERNAME', () => { if(!html.includes('VIEWER_USERNAME')) throw new Error('VIEWER_USERNAME yok'); });
+    test('data objesi', () => { if(!html.match(/let\s+data\s*=\s*\{/)) throw new Error('data yok'); });
+    test('data.personnel', () => { if(!html.match(/personnel\s*:\s*\[/)) throw new Error('personnel yok'); });
+    test('data.clothing', () => { if(!html.match(/clothing\s*:\s*\[/)) throw new Error('clothing yok'); });
+    test('data.kkds', () => { if(!html.match(/kkds\s*:\s*\[/)) throw new Error('kkds yok'); });
+    test('data.tasks', () => { if(!html.match(/tasks\s*:\s*\[/)) throw new Error('tasks yok'); });
+}
+
+function analyzeFunctionExistence(html){
+    section('📚 Fonksiyonlar');
+    const functions = [
+        'loadSession', 'doLogin', 'handleLogout', 'applyAuthUI',
+        'saveToLocalStorage', 'persistData', 'loadFromLocalStorage',
+        'showModal', 'hideModal', 'showSection', 'escapeHtml', 'normalize',
+        'updatePersonnelTable', 'showAddPersonnelModal', 'addPersonnel', 'deletePersonnel',
+        'updateStockTables', 'updatePendingTables', 'updateTaskPage', 'updateTaskStats',
+        'updateActiveTaskTable', 'updateCompletedTaskTable', 'calculateTaskStatus',
+        'updateTrainingStats', 'updateCertificateStats', 'updateUpcomingTrainings',
+        'switchSettingsPanel', 'openStatusModal', 'openDepartmentModal', 'openTitleModal',
+        'openPrintPreview', 'doPrint', 'similarity', 'generateAutoTcNo',
+        'openTaskCompletionModal', 'confirmTaskCompletion', 'filterActiveTasks',
+        'setActiveTaskFilter', 'addFiiliGorev', 'addStatus', 'addDepartment', 'addTitle'
+    ];
+    functions.forEach(fn => {
+        test('fn: ' + fn + '()', () => {
+            const patterns = [
+                new RegExp('function\\s+' + fn + '\\s*\\('),
+                new RegExp(fn + '\\s*=\\s*async\\s*\\('),
+                new RegExp(fn + '\\s*=\\s*function'),
+                new RegExp(fn + '\\s*=\\s*\\([^)]*\\)\\s*=>')
+            ];
+            for(const p of patterns) if(p.test(html)) return;
+            throw new Error('Tanımlı değil');
         });
     });
-    
-    // Kritik elementler
-    ['home', 'personnel', 'tasks', 'settings', 'loginModal'].forEach(id => {
-        test('Element: #' + id, () => {
-            if(!html.includes('id="' + id + '"')) throw new Error(id + ' yok');
+}
+
+function analyzeElements(html){
+    section('🎨 Elementler');
+    const elements = [
+        'home', 'personnel', 'training', 'stock', 'tasks', 'settings',
+        'lockIndicator', 'logoutBtn', 'syncStatus',
+        'personnelTable', 'personnelSearchInput',
+        'stockTable', 'clothingStockTable', 'kddPendingTable', 'clothingPendingTable',
+        'activeTaskTableBody', 'completedTaskTableBody',
+        'loginModal', 'loginUsername', 'loginPassword',
+        'addPersonnelModal', 'personnelName', 'kddModal', 'clothingModal',
+        'trainingModal', 'certificateModal', 'reportModal', 'printPreviewModal',
+        'taskCompletionModal', 'printPreviewArea',
+        'panelPersonnel', 'panelTask', 'panelTraining', 'panelStock',
+        'panelCertificate', 'panelMyk', 'panelGorevTanim', 'panelBackup',
+        'mykSettingsModal', 'liseMuafiyetModal', 'ustalikMuafiyetModal'
+    ];
+    elements.forEach(id => {
+        test('#' + id, () => {
+            if(!html.includes('id="' + id + '"')) throw new Error('Yok');
         });
     });
 }
 
 // ==================== IFRAME YÜKLEME ====================
-async function loadIframeInResult(html){
+async function loadIframe(html){
     const iframe = document.createElement('iframe');
     iframe.id = 'testIframe';
     iframe.style.display = 'none';
@@ -668,71 +798,196 @@ function cleanupIframe(){
 }
 
 // ==================== FONKSİYON TESTLERİ ====================
-async function runFunctionTests(){
-    if(!iframeWindow){
-        test('iframe hazır', () => { throw new Error('iframe yüklenmedi'); });
-        return;
-    }
+async function testFunctionLogic(){
+    section('🧠 Mantık Testleri');
+    if(!iframeWindow) return;
     
-    // Kritik fonksiyonlar
-    const criticalFunctions = [
-        'loadSession', 'saveSession', 'clearSession', 'applyAuthUI', 'doLogin', 'handleLogout',
-        'showModal', 'hideModal', 'showSection', 'escapeHtml', 'normalize',
-        'updatePersonnelTable', 'showAddPersonnelModal', 'addPersonnel', 'deletePersonnel',
-        'updateStockTables', 'updatePendingTables', 'updateTaskPage', 'updateTaskStats',
-        'updateActiveTaskTable', 'updateCompletedTaskTable', 'calculateTaskStatus',
-        'updateTrainingStats', 'updateCertificateStats', 'updateUpcomingTrainings',
-        'switchSettingsPanel', 'saveToLocalStorage', 'persistData', 'loadFromLocalStorage',
-        'openPrintPreview', 'doPrint', 'similarity', 'generateAutoTcNo'
-    ];
+    test('escapeHtml() < kaçırır', () => { const r = iframeWindow.escapeHtml('<s>'); if(r.includes('<s>')) throw new Error('Başarısız'); });
+    test('escapeHtml() > kaçırır', () => { const r = iframeWindow.escapeHtml('a>b'); if(r.includes('>')) throw new Error('Başarısız'); });
+    test('escapeHtml() " kaçırır', () => { const r = iframeWindow.escapeHtml('"a"'); if(r.includes('"a"')) throw new Error('Başarısız'); });
+    test('escapeHtml() & kaçırır', () => { const r = iframeWindow.escapeHtml('A&B'); if(r==='A&B') throw new Error('Başarısız'); });
+    test('escapeHtml() boş string', () => { if(iframeWindow.escapeHtml('') !== '') throw new Error('Boş değil'); });
+    test('escapeHtml() null', () => { if(iframeWindow.escapeHtml(null) !== '') throw new Error('Hata'); });
     
-    criticalFunctions.forEach(fn => {
-        test('Çalışıyor: ' + fn + '()', () => {
-            if(typeof iframeWindow[fn] !== 'function') {
-                throw new Error(fn + ' çağrılamıyor');
-            }
-        });
+    test('normalize() İ→i', () => { if(iframeWindow.normalize('İSTANBUL').includes('İ')) throw new Error('Dönmedi'); });
+    test('normalize() ı→i', () => { if(iframeWindow.normalize('ışık').includes('ı')) throw new Error('Dönmedi'); });
+    test('normalize() ç→c', () => { if(iframeWindow.normalize('çağrı').includes('ç')) throw new Error('Dönmedi'); });
+    test('normalize() ş→s', () => { if(iframeWindow.normalize('şeker').includes('ş')) throw new Error('Dönmedi'); });
+    test('normalize() ö→o', () => { if(iframeWindow.normalize('ölçü').includes('ö')) throw new Error('Dönmedi'); });
+    test('normalize() ü→u', () => { if(iframeWindow.normalize('üzüm').includes('ü')) throw new Error('Dönmedi'); });
+    test('normalize() büyük=küçük', () => { if(iframeWindow.normalize('TEST') !== iframeWindow.normalize('test')) throw new Error('Farklı'); });
+    
+    test('seasonLabel() yazlik', () => { if(!iframeWindow.seasonLabel('yazlik').includes('Yazlık')) throw new Error('Yanlış'); });
+    test('seasonLabel() kislik', () => { if(!iframeWindow.seasonLabel('kislik').includes('Kışlık')) throw new Error('Yanlış'); });
+    test('genderLabel() E', () => { if(!iframeWindow.genderLabel('E').includes('Erkek')) throw new Error('Yanlış'); });
+    test('genderLabel() K', () => { if(!iframeWindow.genderLabel('K').includes('Kadın')) throw new Error('Yanlış'); });
+    
+    test('generateAutoTcNo() 11 hane', () => { if(iframeWindow.generateAutoTcNo().length !== 11) throw new Error('Yanlış'); });
+    test('generateAutoTcNo() rakam', () => { if(!/^\d+$/.test(iframeWindow.generateAutoTcNo())) throw new Error('Değil'); });
+}
+
+async function testCalculations(){
+    section('🧮 Hesaplama Testleri');
+    if(!iframeWindow) return;
+    
+    test('calculateTaskStatus() aktif', () => { 
+        const r = iframeWindow.calculateTaskStatus({ nextDueDate: new Date(Date.now() + 30*86400000).toISOString() });
+        if(r.status !== 'active') throw new Error('Değil: ' + r.status);
+    });
+    test('calculateTaskStatus() gecikmiş', () => { 
+        const r = iframeWindow.calculateTaskStatus({ nextDueDate: new Date(Date.now() - 86400000).toISOString() });
+        if(r.status !== 'overdue') throw new Error('Değil');
+    });
+    test('calculateTaskStatus() warning', () => { 
+        const r = iframeWindow.calculateTaskStatus({ nextDueDate: new Date(Date.now() + 2*86400000).toISOString() });
+        if(r.status !== 'warning') throw new Error('Değil');
     });
     
-    // Gerçekten çalışan testler (hata fırlatmasın)
-    ['updatePersonnelTable', 'updateStockTables', 'updateTaskPage', 'updateTrainingStats'].forEach(fn => {
-        test('Çağrılıyor: ' + fn + '()', () => {
-            iframeWindow[fn]();
-        });
-    });
+    test('similarity() aynı → 100', () => { if(iframeWindow.similarity('Test', 'Test') !== 100) throw new Error('Değil'); });
+    test('similarity() benzer → yüksek', () => { if(iframeWindow.similarity('Kaynakçı', 'Kaynak İşçisi') < 40) throw new Error('Düşük'); });
+    test('similarity() farklı → düşük', () => { if(iframeWindow.similarity('Elma', 'Araba') > 50) throw new Error('Yüksek'); });
+    test('similarity() boş → 0', () => { if(iframeWindow.similarity('', '') !== 0) throw new Error('Değil'); });
     
-    // Bölümler açılabiliyor mu
-    ['home', 'personnel', 'training', 'stock', 'tasks', 'settings'].forEach(section => {
-        test('Bölüm açılıyor: ' + section, () => {
-            iframeWindow.showSection(section);
-            const el = iframeWindow.document.getElementById(section);
-            if(!el) throw new Error('Element yok: ' + section);
-            if(el.classList.contains('hidden')) throw new Error('Açılmadı: ' + section);
-        });
-    });
+    test('levenshteinRatio() aynı → 100', () => { if(iframeWindow.levenshteinRatio('test', 'test') !== 100) throw new Error('Değil'); });
+    test('levenshteinRatio() 1 harf fark', () => { if(iframeWindow.levenshteinRatio('test', 'tesa') < 70) throw new Error('Düşük'); });
     
-    // Modallar açılıp kapanıyor mu
-    ['loginModal', 'addPersonnelModal', 'kddModal', 'reportModal'].forEach(modal => {
-        test('Modal: ' + modal, () => {
-            iframeWindow.showModal(modal);
-            const m = iframeWindow.document.getElementById(modal);
-            if(!m) throw new Error('Modal yok: ' + modal);
-            if(m.classList.contains('hidden')) throw new Error('Açılmadı');
-            iframeWindow.hideModal(modal);
-        });
+    test('fiiliGorevdenYkKodu() bulur', () => { 
+        const r = iframeWindow.fiiliGorevdenYkKodu('17UY0301-3 Kaynakçı');
+        if(r !== '17UY0301-3') throw new Error('Yanlış: ' + r);
+    });
+    test('fiiliGorevdenYkKodu() yoksa null', () => { 
+        if(iframeWindow.fiiliGorevdenYkKodu('Kaynakçı') !== null) throw new Error('Null değil');
     });
 }
 
-// ==================== SONUÇ GÖSTERİMLERİ ====================
+async function testRegexAndParse(){
+    section('🔍 Regex ve Parse');
+    if(!iframeWindow) return;
+    
+    test('extractBolumler() virgül ayırır', () => { if(iframeWindow.extractBolumler('A, B, C').length < 3) throw new Error('Az'); });
+    test('extractBolumler() parantez', () => { if(iframeWindow.extractBolumler('İnşaat (581, 582)').length < 2) throw new Error('Az'); });
+    test('extractBolumler() boş', () => { if(iframeWindow.extractBolumler('').length !== 0) throw new Error('Boş değil'); });
+    test('extractBolumler() array', () => { if(iframeWindow.extractBolumler(['A','B','C']).length !== 3) throw new Error('Değil'); });
+    test('stripYkKodu() temizler', () => { 
+        const r = iframeWindow.stripYkKodu('17UY0301-3 Kaynakçı');
+        if(r.includes('17UY0301-3')) throw new Error('Temizlenmedi');
+    });
+}
+
+async function testTurkishCharacters(){
+    section('🇹🇷 Türkçe Karakterler');
+    if(!iframeWindow) return;
+    
+    test('Türkçe karakter korunur', () => { 
+        const t = 'ÇĞİÖŞÜçğıöşü';
+        if(iframeWindow.escapeHtml(t).length !== t.length) throw new Error('Bozuldu');
+    });
+    test('İstanbul → istanbul', () => { if(iframeWindow.normalize('İstanbul') !== 'istanbul') throw new Error('Yanlış'); });
+    test('Çorum → corum', () => { if(iframeWindow.normalize('Çorum') !== 'corum') throw new Error('Yanlış'); });
+    test('Şırnak → sirnak', () => { if(iframeWindow.normalize('Şırnak') !== 'sirnak') throw new Error('Yanlış'); });
+}
+
+async function testDataIntegrity(){
+    section('💾 Veri Bütünlüğü');
+    if(!iframeWindow || !iframeWindow.data) return;
+    
+    test('data.statuses array', () => { if(!Array.isArray(iframeWindow.data.statuses)) throw new Error('Değil'); });
+    test('data.personnel array', () => { if(!Array.isArray(iframeWindow.data.personnel)) throw new Error('Değil'); });
+    test('data.clothing array', () => { if(!Array.isArray(iframeWindow.data.clothing)) throw new Error('Değil'); });
+    test('data.kkds array', () => { if(!Array.isArray(iframeWindow.data.kkds)) throw new Error('Değil'); });
+    test('data.tasks array', () => { if(!Array.isArray(iframeWindow.data.tasks)) throw new Error('Değil'); });
+    test('Personel TC benzersiz', () => { 
+        const tcs = iframeWindow.data.personnel.map(p => p.tcNo).filter(x => x);
+        if(tcs.length !== new Set(tcs).size) throw new Error('Duplicate');
+    });
+}
+
+async function testFiltering(){
+    section('🔍 Filtreleme');
+    if(!iframeWindow) return;
+    
+    test('applyPersonnelFilter() çalışır', () => { iframeWindow.applyPersonnelFilter(); });
+    test('clearPersonnelFilters() çalışır', () => { iframeWindow.clearPersonnelFilters(); });
+    test('filterActiveTasks() hepsi', () => { 
+        iframeWindow.currentActiveTaskFilter = 'hepsi';
+        const t = [{ nextDueDate: new Date(Date.now() + 86400000).toISOString() }];
+        if(iframeWindow.filterActiveTasks(t).length !== t.length) throw new Error('Çalışmadı');
+    });
+    test('setActiveTaskFilter() atar', () => { 
+        iframeWindow.setActiveTaskFilter('30gun');
+        if(iframeWindow.currentActiveTaskFilter !== '30gun') throw new Error('Atanmadı');
+    });
+}
+
+async function testErrorHandling(){
+    section('⚠️ Hata Yönetimi');
+    if(!iframeWindow) return;
+    
+    test('escapeHtml(null) çökmüyor', () => { iframeWindow.escapeHtml(null); });
+    test('escapeHtml(undefined) çökmüyor', () => { iframeWindow.escapeHtml(undefined); });
+    test('normalize(null) çökmüyor', () => { iframeWindow.normalize(null); });
+    test('similarity(null, null) çökmüyor', () => { iframeWindow.similarity(null, null); });
+    test('filterActiveTasks(null)', () => { iframeWindow.filterActiveTasks(null); });
+}
+
+async function testPerformance(){
+    section('⚡ Performans');
+    if(!iframeWindow) return;
+    
+    const tests = [
+        ['escapeHtml() 1000x', () => { for(let i=0; i<1000; i++) iframeWindow.escapeHtml('test'); }],
+        ['normalize() 1000x', () => { for(let i=0; i<1000; i++) iframeWindow.normalize('İSTANBUL'); }],
+        ['similarity() 100x', () => { for(let i=0; i<100; i++) iframeWindow.similarity('A', 'B'); }],
+        ['updatePersonnelTable() 10x', () => { for(let i=0; i<10; i++) iframeWindow.updatePersonnelTable(); }],
+        ['updateStockTables() 10x', () => { for(let i=0; i<10; i++) iframeWindow.updateStockTables(); }]
+    ];
+    
+    for(const [name, fn] of tests){
+        const t0 = performance.now();
+        try {
+            fn();
+            const d = performance.now() - t0;
+            test('⚡ ' + name + ' (' + d.toFixed(1) + 'ms)', () => {
+                if(d > 1000) throw new Error('Yavaş: ' + d.toFixed(1) + 'ms');
+            });
+            testResults[testResults.length - 1].perfDuration = d;
+        } catch(e){
+            test('⚡ ' + name, () => { throw e; });
+        }
+    }
+}
+
+async function testEdgeCases(){
+    section('🎯 Kenar Durumlar');
+    if(!iframeWindow) return;
+    
+    test('Çok uzun normalize', () => { iframeWindow.normalize('A'.repeat(10000)); });
+    test('Özel karakter escapeHtml', () => { 
+        const r = iframeWindow.escapeHtml('<>"&\'`');
+        if(r.includes('<')) throw new Error('Başarısız');
+    });
+    test('Emoji escapeHtml', () => { 
+        if(!iframeWindow.escapeHtml('🚀🎉').includes('🚀')) throw new Error('Kayıp');
+    });
+    test('Sayı normalize', () => { 
+        if(iframeWindow.normalize(12345) !== '12345') throw new Error('Yanlış');
+    });
+}
+
+// ==================== SONUÇ GÖSTER ====================
 function showSingleResults(){
     document.getElementById('resultIcon').textContent = '📊';
-    document.getElementById('resultTitle').textContent = 'Tek Dosya Test Sonuçları';
+    document.getElementById('resultTitle').textContent = 'Test Sonuçları';
+    document.getElementById('compareTab').style.display = 'none';
     
     const okCount = testResults.filter(r => r.status === 'ok').length;
     const errCount = testResults.filter(r => r.status === 'error').length;
-    const successRate = Math.round((okCount / testResults.length) * 100);
+    const successRate = testResults.length > 0 ? Math.round((okCount / testResults.length) * 100) : 0;
+    const totalDuration = testResults.reduce((sum, r) => sum + (r.duration || 0), 0);
     
-    document.getElementById('testDate').textContent = new Date().toLocaleString('tr-TR');
+    document.getElementById('testDate').textContent = 
+        new Date().toLocaleString('tr-TR') + ' — ' +
+        (testMode === 'basic' ? '⚡ Temel' : testMode === 'detailed' ? '🔬 Detaylı' : '🎓 Uzman') + ' Mod';
     
     document.getElementById('summary').innerHTML = `
         <div class="stat-card stat-ok"><div class="stat-number">${okCount}</div><div class="stat-label">✅ Başarılı</div></div>
@@ -741,19 +996,35 @@ function showSingleResults(){
         <div class="stat-card stat-rate"><div class="stat-number">%${successRate}</div><div class="stat-label">🎯 Başarı</div></div>
     `;
     
+    document.getElementById('totalDuration').textContent = totalDuration.toFixed(0) + 'ms';
+    
     const banner = document.getElementById('statusBanner');
     if(errCount === 0){
-        banner.innerHTML = '<div class="status-banner status-success">🎉 Mükemmel! Tüm testler başarılı.</div>';
+        banner.innerHTML = '<div class="status-banner status-success">🎉 MÜKEMMEL! Tüm ' + testResults.length + ' test başarılı!</div>';
+    } else if(successRate >= 90){
+        banner.innerHTML = '<div class="status-banner status-warn">⚠️ ' + errCount + ' test başarısız (Başarı: %' + successRate + ')</div>';
     } else {
-        banner.innerHTML = '<div class="status-banner status-error">⚠️ ' + errCount + ' test başarısız.</div>';
+        banner.innerHTML = '<div class="status-banner status-error">❌ ' + errCount + ' test başarısız! (Başarı: %' + successRate + ')</div>';
     }
     
-    renderTestList();
+    renderTestList('all');
+    
+    if(testMode === 'expert'){
+        document.getElementById('perfSection').classList.remove('hidden');
+        const perfResults = testResults.filter(r => r.perfDuration !== undefined).sort((a, b) => b.perfDuration - a.perfDuration);
+        document.getElementById('perfTableBody').innerHTML = perfResults.slice(0, 20).map(r => {
+            let cls = 'perf-ok';
+            if(r.perfDuration > 500) cls = 'perf-slow';
+            else if(r.perfDuration > 100) cls = 'perf-warn';
+            return `<tr class="${cls}"><td>${escapeHtml(r.name)}</td><td>${r.perfDuration.toFixed(2)}ms</td><td>${r.perfDuration < 100 ? '⚡ Hızlı' : r.perfDuration < 500 ? '⚠️ Orta' : '🐌 Yavaş'}</td></tr>`;
+        }).join('');
+    }
 }
 
 function showCompareResults(){
     document.getElementById('resultIcon').textContent = '🔀';
     document.getElementById('resultTitle').textContent = 'Karşılaştırma Raporu';
+    document.getElementById('compareTab').style.display = 'inline-block';
     
     const lostCount = compareData.lostFunctions.length + compareData.lostElements.length + 
                      compareData.lostEventHandlers.length + compareData.lostVariables.length;
@@ -761,7 +1032,7 @@ function showCompareResults(){
     const newCount = compareData.newFunctions.length + compareData.newElements.length + 
                     compareData.newVariables.length;
     
-    document.getElementById('testDate').textContent = new Date().toLocaleString('tr-TR');
+    document.getElementById('testDate').textContent = new Date().toLocaleString('tr-TR') + ' — Eski vs Yeni';
     
     // Uyarı paneli
     if(lostCount > 0){
@@ -770,25 +1041,28 @@ function showCompareResults(){
         
         if(compareData.lostFunctions.length > 0){
             warningHTML += '<div class="warning-item"><strong>❌ Kaybolan Fonksiyonlar (' + compareData.lostFunctions.length + '):</strong><br>';
-            warningHTML += compareData.lostFunctions.map(fn => '• <code>' + fn + '()</code>').join('<br>');
+            warningHTML += compareData.lostFunctions.slice(0, 10).map(fn => '• <code>' + fn + '()</code>').join('<br>');
+            if(compareData.lostFunctions.length > 10) warningHTML += '<br>... ve ' + (compareData.lostFunctions.length - 10) + ' tane daha';
             warningHTML += '</div>';
         }
         
         if(compareData.lostElements.length > 0){
             warningHTML += '<div class="warning-item"><strong>❌ Kaybolan HTML Elementleri (' + compareData.lostElements.length + '):</strong><br>';
-            warningHTML += compareData.lostElements.map(id => '• <code>#' + id + '</code>').join('<br>');
+            warningHTML += compareData.lostElements.slice(0, 10).map(id => '• <code>#' + id + '</code>').join('<br>');
+            if(compareData.lostElements.length > 10) warningHTML += '<br>... ve ' + (compareData.lostElements.length - 10) + ' tane daha';
             warningHTML += '</div>';
         }
         
         if(compareData.lostEventHandlers.length > 0){
             warningHTML += '<div class="warning-item"><strong>⚠️ Kaybolan Event Handler\'lar (' + compareData.lostEventHandlers.length + '):</strong><br>';
-            warningHTML += compareData.lostEventHandlers.map(fn => '• <code>' + fn + '()</code> — Buton tıklaması çalışmayabilir!').join('<br>');
+            warningHTML += compareData.lostEventHandlers.slice(0, 10).map(fn => '• <code>' + fn + '()</code> — Buton çalışmayabilir!').join('<br>');
             warningHTML += '</div>';
         }
         
         if(compareData.lostVariables.length > 0){
             warningHTML += '<div class="warning-item"><strong>❌ Kaybolan Değişkenler (' + compareData.lostVariables.length + '):</strong><br>';
-            warningHTML += compareData.lostVariables.map(v => '• <code>' + v + '</code>').join('<br>');
+            warningHTML += compareData.lostVariables.slice(0, 10).map(v => '• <code>' + v + '</code>').join('<br>');
+            if(compareData.lostVariables.length > 10) warningHTML += '<br>... ve ' + (compareData.lostVariables.length - 10) + ' tane daha';
             warningHTML += '</div>';
         }
         
@@ -855,7 +1129,7 @@ function showCompareResults(){
         reportHTML += '</div>';
     }
     
-    // Yeni eklenenler (bonus)
+    // Yeni eklenenler
     if(compareData.newFunctions.length > 0){
         reportHTML += '<div class="diff-section"><div class="diff-title">➕ Yeni Eklenen Fonksiyonlar (' + compareData.newFunctions.length + ')</div>';
         compareData.newFunctions.slice(0, 20).forEach(fn => {
@@ -867,42 +1141,106 @@ function showCompareResults(){
         reportHTML += '</div>';
     }
     
-    document.getElementById('compareReport').classList.remove('hidden');
-    document.getElementById('compareReport').innerHTML = reportHTML;
+    if(compareData.newElements.length > 0){
+        reportHTML += '<div class="diff-section"><div class="diff-title">➕ Yeni Eklenen Elementler (' + compareData.newElements.length + ')</div>';
+        compareData.newElements.slice(0, 20).forEach(id => {
+            reportHTML += '<div class="diff-item diff-added"><span class="diff-icon">➕</span><div class="diff-content"><code>#' + escapeHtml(id) + '</code></div></div>';
+        });
+        reportHTML += '</div>';
+    }
     
-    // Test listesi
-    renderTestList();
+    if(lostCount === 0 && newCount === 0){
+        reportHTML += '<div class="diff-section"><div class="diff-title">📊 Değişiklik Yok</div><div class="diff-item diff-unchanged"><span class="diff-icon">ℹ️</span><div class="diff-content">Eski ve yeni sürüm yapısal olarak aynı.</div></div></div>';
+    }
+    
+    document.getElementById('compareReport').innerHTML = reportHTML;
+    renderTestList('all');
 }
 
-function renderTestList(){
-    const okCount = testResults.filter(r => r.status === 'ok').length;
-    const errCount = testResults.filter(r => r.status === 'error').length;
+function renderTestList(filter){
+    let items = testResults;
+    if(filter === 'ok') items = items.filter(r => r.status === 'ok');
+    else if(filter === 'error') items = items.filter(r => r.status === 'error');
+    else if(filter === 'slow') items = items.filter(r => r.duration > 50);
     
-    let html = '<div class="diff-title" style="margin-top: 20px;">🧪 Yeni Sürüm Testleri (' + okCount + '/' + testResults.length + ')</div>';
+    const groups = {};
+    items.forEach(r => {
+        let group = '📌 Diğer';
+        if(/HTML|DOCTYPE|lang|charset|viewport|title|Body|Script|Style|Meta/i.test(r.name)) group = '📄 HTML Yapısı';
+        else if(/Tailwind|PDF|Supabase CDN/i.test(r.name)) group = '📦 CDN';
+        else if(/SUPABASE_|ADMIN_|VIEWER_|data\.|isAdmin|isViewer/i.test(r.name)) group = '🔧 Değişkenler';
+        else if(/^fn: /i.test(r.name)) group = '📚 Fonksiyonlar';
+        else if(/^#/i.test(r.name)) group = '🎨 Elementler';
+        else if(/escapeHtml|normalize|seasonLabel|genderLabel|generateAutoTcNo/i.test(r.name)) group = '🧠 Mantık';
+        else if(/calculateTaskStatus|similarity|levenshtein|fiiliGorevden/i.test(r.name)) group = '🧮 Hesaplama';
+        else if(/extractBolumler|stripYkKodu|Regex/i.test(r.name)) group = '🔍 Regex';
+        else if(/Türkçe|İstanbul|Çorum|Şırnak/i.test(r.name)) group = '🇹🇷 Türkçe';
+        else if(/Veri|data\.|Benzersiz/i.test(r.name)) group = '💾 Veri';
+        else if(/filter|Filtre/i.test(r.name)) group = '🔍 Filtreleme';
+        else if(/Hata|çökmüyor/i.test(r.name)) group = '⚠️ Hata Yönetimi';
+        else if(/⚡/i.test(r.name)) group = '⚡ Performans';
+        else if(/Kenar|Çok uzun|Özel karakter|Emoji|Sayı normalize/i.test(r.name)) group = '🎯 Kenar Durumlar';
+        
+        if(!groups[group]) groups[group] = [];
+        groups[group].push(r);
+    });
     
-    testResults.forEach(r => {
-        const icon = r.status === 'ok' ? '✅' : '❌';
-        const cls = r.status === 'ok' ? 'diff-added' : 'diff-removed';
-        html += '<div class="diff-item ' + cls + '">';
-        html += '<span class="diff-icon">' + icon + '</span>';
-        html += '<div class="diff-content">' + escapeHtml(r.name);
-        if(r.error) html += '<div style="color: #fecaca; font-size: 11px; margin-top: 4px;">⚡ ' + escapeHtml(r.error) + '</div>';
-        html += '</div>';
-        html += '<div class="diff-badge">' + r.duration.toFixed(2) + 'ms</div>';
-        html += '</div>';
+    let html = '';
+    Object.keys(groups).forEach(groupName => {
+        const g = groups[groupName];
+        const okG = g.filter(r => r.status === 'ok').length;
+        const errG = g.filter(r => r.status === 'error').length;
+        
+        html += '<div class="section-title">' + groupName + ' <span class="section-count">' + okG + '/' + g.length + (errG > 0 ? ' — ' + errG + ' hata' : '') + '</span></div>';
+        
+        g.forEach(r => {
+            const icon = r.status === 'ok' ? '✅' : '❌';
+            const cls = r.status === 'ok' ? 'test-item-ok' : 'test-item-err';
+            html += '<div class="test-item ' + cls + '">';
+            html += '<div class="test-name">' + icon + ' ' + escapeHtml(r.name);
+            if(r.error) html += '<div class="test-error">⚡ ' + escapeHtml(r.error) + '</div>';
+            html += '</div>';
+            html += '<div class="test-time">' + r.duration.toFixed(2) + 'ms</div>';
+            html += '</div>';
+        });
     });
     
     document.getElementById('testList').innerHTML = html;
 }
 
-// ==================== TEST FONKSİYONU ====================
+function filterResults(filter, btn){
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTestList(filter);
+}
+
+function switchTab(tabName, btn){
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    btn.classList.add('active');
+}
+
+// ==================== YARDIMCILAR ====================
+let currentSection = '';
+function section(name){ currentSection = name; }
+
 function test(name, fn){
-    const start = performance.now();
+    const startTime = performance.now();
     try {
-        fn();
-        testResults.push({ name, status: 'ok', duration: Math.round((performance.now() - start) * 100) / 100 });
+        const r = fn();
+        if(r instanceof Promise){
+            r.then(() => {
+                testResults.push({ name, status: 'ok', duration: Math.round((performance.now() - startTime) * 100) / 100 });
+            }).catch(e => {
+                testResults.push({ name, status: 'error', error: e.message, duration: Math.round((performance.now() - startTime) * 100) / 100 });
+            });
+        } else {
+            testResults.push({ name, status: 'ok', duration: Math.round((performance.now() - startTime) * 100) / 100 });
+        }
     } catch(e){
-        testResults.push({ name, status: 'error', error: e.message, duration: Math.round((performance.now() - start) * 100) / 100 });
+        testResults.push({ name, status: 'error', error: e.message, duration: Math.round((performance.now() - startTime) * 100) / 100 });
     }
 }
 
@@ -917,11 +1255,12 @@ function escapeHtml(s){
 function copyAllResults(){
     const okCount = testResults.filter(r => r.status === 'ok').length;
     const errCount = testResults.filter(r => r.status === 'error').length;
+    const successRate = testResults.length > 0 ? Math.round((okCount / testResults.length) * 100) : 0;
     
     let text = '🧪 TEST VE KARŞILAŞTIRMA SONUÇLARI v4.0\n';
     text += '═'.repeat(60) + '\n';
     text += 'Tarih: ' + new Date().toLocaleString('tr-TR') + '\n';
-    text += 'Mod: ' + (testMode === 'single' ? '📄 Tek Dosya' : '🔀 Karşılaştırma') + '\n';
+    text += 'Mod: ' + (testMode === 'compare' ? '🔀 Karşılaştırma' : testMode === 'basic' ? '⚡ Temel' : testMode === 'detailed' ? '🔬 Detaylı' : '🎓 Uzman') + '\n';
     text += '═'.repeat(60) + '\n\n';
     
     if(testMode === 'compare' && compareData){
@@ -958,19 +1297,29 @@ function copyAllResults(){
             text += '\n';
         }
         
-        text += '➕ YENİ EKLENENLER:\n';
+        const newCount = compareData.newFunctions.length + compareData.newElements.length + compareData.newVariables.length;
+        text += '➕ YENİ EKLENENLER (' + newCount + '):\n';
         text += '  • Fonksiyon: ' + compareData.newFunctions.length + '\n';
         text += '  • Element: ' + compareData.newElements.length + '\n';
         text += '  • Değişken: ' + compareData.newVariables.length + '\n\n';
+        
+        text += '📏 BOYUT: ' + Math.round(compareData.oldSize/1024) + ' KB → ' + Math.round(compareData.newSize/1024) + ' KB (' + (compareData.sizeChange > 0 ? '+' : '') + compareData.sizeChange + ' karakter)\n\n';
     }
     
-    text += '📊 TEST SONUÇLARI: ' + okCount + '/' + testResults.length + ' başarılı\n';
+    text += '📊 TEST SONUÇLARI: ' + okCount + '/' + testResults.length + ' başarılı (%' + successRate + ')\n';
     text += '─'.repeat(60) + '\n';
-    testResults.forEach(r => {
-        const icon = r.status === 'ok' ? '✅' : '❌';
-        text += icon + ' ' + r.name;
-        if(r.error) text += ' — HATA: ' + r.error;
-        text += '\n';
+    
+    if(errCount > 0){
+        text += '\n❌ BAŞARISIZ TESTLER:\n';
+        testResults.filter(r => r.status === 'error').forEach((r, i) => {
+            text += (i+1) + '. ' + r.name + '\n';
+            if(r.error) text += '   ⚡ ' + r.error + '\n';
+        });
+    }
+    
+    text += '\n✅ BAŞARILI TESTLER:\n';
+    testResults.filter(r => r.status === 'ok').forEach((r, i) => {
+        text += (i+1) + '. ' + r.name + '\n';
     });
     
     navigator.clipboard.writeText(text).then(() => {
