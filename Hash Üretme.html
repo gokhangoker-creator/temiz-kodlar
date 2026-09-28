@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>SHA-256 Hash Hesaplayıcı</title>
+<style>
+body { font-family: Arial; background: #f0f4ff; padding: 30px; max-width: 700px; margin: auto; }
+h1 { color: #4338ca; }
+.box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.1); margin-bottom: 20px; }
+input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #c7d2fe; border-radius: 8px; box-sizing: border-box; }
+button { background: #4338ca; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 15px; cursor: pointer; margin-top: 10px; }
+button:hover { background: #3730a3; }
+.hash-out { margin-top: 15px; padding: 12px; background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; font-family: monospace; font-size: 13px; word-break: break-all; user-select: all; }
+.label { font-weight: bold; margin-bottom: 6px; color: #1e3a8a; }
+.note { font-size: 12px; color: #666; margin-top: 6px; }
+</style>
+</head>
+<body>
+<h1>🔐 SHA-256 Hash Hesaplayıcı</h1>
+
+<div class="box">
+    <div class="label">Admin Şifresi (gokhangoker)</div>
+    <input type="text" id="adminPass" value="2621556">
+    <button onclick="hashIt('adminPass','adminHash')">Hash Hesapla</button>
+    <div class="hash-out" id="adminHash">Buraya hash gelecek...</div>
+    <div class="note">Bu hash'i kopyalayıp index.html'de ADMIN_PASSWORD_HASH kısmına yapıştırın.</div>
+</div>
+
+<div class="box">
+    <div class="label">İzleyici Şifresi (adanarts)</div>
+    <input type="text" id="viewerPass" value="123456">
+    <button onclick="hashIt('viewerPass','viewerHash')">Hash Hesapla</button>
+    <div class="hash-out" id="viewerHash">Buraya hash gelecek...</div>
+    <div class="note">Bu hash'i kopyalayıp index.html'de VIEWER_PASSWORD_HASH kısmına yapıştırın.</div>
+</div>
+
+<div class="box">
+    <div class="label">🔒 Kendi şifrenizle test edin</div>
+    <input type="text" id="customPass" placeholder="Şifre yazın...">
+    <button onclick="hashIt('customPass','customHash')">Hash Hesapla</button>
+    <div class="hash-out" id="customHash">Buraya hash gelecek...</div>
+</div>
+
+<script>
+async function sha256(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashIt(inputId, outputId) {
+    const val = document.getElementById(inputId).value;
+    if (!val) { document.getElementById(outputId).textContent = '⚠️ Şifre girin!'; return; }
+    const hash = await sha256(val);
+    document.getElementById(outputId).textContent = hash;
+}
+</script>
+</body>
+</html>

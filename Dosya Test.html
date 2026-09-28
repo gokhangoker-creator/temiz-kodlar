@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ATTİ Raylı Sistem — Test Modülü</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; }
+.card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 20px; }
+h1 { color: #4338ca; font-size: 28px; margin-bottom: 8px; text-align: center; }
+.subtitle { color: #6b7280; text-align: center; font-size: 14px; margin-bottom: 20px; }
+.hidden { display: none !important; }
+
+/* SEÇİM EKRANI */
+.mode-options { display: grid; gap: 15px; margin: 25px 0; }
+.mode-option { border: 3px solid #e0e7ff; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: #f8fafc; }
+.mode-option:hover { border-color: #a5b4fc; background: #f0f4ff; }
+.mode-option.selected { border-color: #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); box-shadow: 0 4px 15px rgba(99,102,241,0.2); }
+.mode-option input[type="radio"] { display: none; }
+.mode-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+.mode-icon { font-size: 40px; }
+.mode-title { font-size: 18px; font-weight: 700; color: #1e3a8a; }
+.mode-desc { font-size: 13px; color: #6b7280; margin-left: 55px; line-height: 1.6; }
+.mode-badge { display: inline-block; background: #dbeafe; color: #1e40af; padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; margin-left: 8px; }
+
+/* ORTAK */
+.upload-area { border: 3px dashed #a5b4fc; border-radius: 16px; padding: 40px; text-align: center; background: #f0f4ff; transition: all 0.3s; cursor: pointer; margin-top: 20px; }
+.upload-area:hover { border-color: #6366f1; background: #e0e7ff; }
+.upload-area.dragover { border-color: #22c55e; background: #dcfce7; }
+.upload-icon { font-size: 60px; margin-bottom: 15px; }
+.upload-text { color: #4338ca; font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+.upload-hint { color: #6b7280; font-size: 13px; }
+.btn { display: inline-block; padding: 14px 32px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.4); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.5); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+.btn-secondary { background: linear-gradient(135deg, #64748b, #475569); color: white; }
+.btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.btn-success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+.btn-info { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; }
+
+.file-info { background: #dcfce7; border-left: 4px solid #22c55e; padding: 15px; border-radius: 8px; margin-top: 15px; color: #166534; }
+.progress { margin-top: 20px; background: #e5e7eb; border-radius: 10px; height: 12px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.3s; width: 0%; }
+.progress-text { text-align: center; margin-top: 10px; color: #4338ca; font-weight: 600; font-size: 14px; }
+
+/* SONUÇ EKRANI */
+.result-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
+.stat-card { padding: 20px; border-radius: 12px; text-align: center; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+.stat-ok { background: linear-gradient(135deg, #059669, #10b981); }
+.stat-err { background: linear-gradient(135deg, #dc2626, #ef4444); }
+.stat-total { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.stat-rate { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+.stat-number { font-size: 38px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.stat-label { font-size: 12px; opacity: 0.95; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.status-banner { padding: 20px; border-radius: 12px; text-align: center; font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+.status-success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+.status-error { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
+.test-list { background: #0f172a; border-radius: 12px; padding: 20px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; }
+.test-list-title { color: #60a5fa; font-size: 14px; font-weight: 700; margin-bottom: 15px; letter-spacing: 1px; }
+.section-title { color: #60a5fa; font-size: 14px; font-weight: 700; margin: 20px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #1e40af; }
+.section-title:first-child { margin-top: 0; }
+.test-item { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; font-size: 12px; }
+.test-item-ok { background: #064e3b; color: #4ade80; }
+.test-item-err { background: #7f1d1d; color: #fca5a5; }
+.test-name { flex: 1; word-break: break-word; }
+.test-time { color: #94a3b8; font-size: 10px; white-space: nowrap; }
+.test-error { color: #fecaca; font-size: 11px; margin-top: 6px; padding: 6px 10px; background: #450a0a; border-radius: 4px; font-family: monospace; word-break: break-word; }
+.info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #1e40af; font-size: 13px; line-height: 1.7; }
+
+/* MANUEL TEST EKRANI */
+.manual-intro { background: linear-gradient(135deg, #fef3c7, #fed7aa); border-left: 4px solid #f59e0b; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+.manual-intro h3 { color: #92400e; font-size: 18px; margin-bottom: 8px; }
+.manual-intro p { color: #78350f; font-size: 13px; line-height: 1.6; }
+.manual-section { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+.manual-section-title { font-size: 16px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e7ff; display: flex; align-items: center; gap: 8px; }
+.manual-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; background: white; border: 2px solid #e5e7eb; }
+.manual-item:hover { background: #f0f4ff; border-color: #c7d2fe; }
+.manual-item.checked { background: #dcfce7; border-color: #22c55e; }
+.manual-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #22c55e; margin-top: 1px; flex-shrink: 0; }
+.manual-item-text { flex: 1; font-size: 14px; color: #1f2937; line-height: 1.5; }
+.manual-item-text strong { color: #4338ca; }
+.manual-progress { background: #e0e7ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: center; font-weight: 700; color: #4338ca; }
+.manual-progress .num { font-size: 24px; }
+.manual-progress .num.ok { color: #059669; }
+.manual-progress .num.no { color: #dc2626; }
+.manual-note { background: #fee2e2; border-left: 4px solid #ef4444; padding: 12px 15px; border-radius: 8px; color: #991b1b; font-size: 13px; margin-top: 15px; }
+.manual-ok { background: #dcfce7; border-left: 4px solid #22c55e; padding: 12px 15px; border-radius: 8px; color: #166534; font-size: 13px; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ==================== EKRAN 1: MOD SEÇİMİ ==================== -->
+    <div id="modeScreen">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 60px;">🧪</div>
+                <h1>ATTİ Raylı Sistem</h1>
+                <p class="subtitle">Test Modülü v2.0</p>
+            </div>
+
+            <div class="info-box">
+                <strong>📌 Test Modu Seçin</strong><br>
+                Aşağıdaki seçeneklerden birini seçip <strong>"Testi Başlat"</strong> butonuna tıklayın.<br>
+                Sonrasında <code>index.html</code> dosyanızı seçmeniz istenecektir.
+            </div>
+
+            <div class="mode-options">
+                <label class="mode-option selected" id="modeAuto" onclick="selectMode('auto')">
+                    <input type="radio" name="testMode" value="auto" checked>
+                    <div class="mode-header">
+                        <div class="mode-icon">⚡</div>
+                        <div>
+                            <div class="mode-title">Sadece Otomatik Test</div>
+                            <div class="mode-badge">HIZLI</div>
+                        </div>
+                    </div>
+                    <div class="mode-desc">
+                        ~100 test otomatik çalışır. Fonksiyonlar, HTML elementleri, JavaScript değişkenleri kontrol edilir. 
+                        <strong>~15 saniye</strong> sürer. Sonuçlar hemen görünür.
+                    </div>
+                </label>
+
+                <label class="mode-option" id="modeManual" onclick="selectMode('manual')">
+                    <input type="radio" name="testMode" value="manual">
+                    <div class="mode-header">
+                        <div class="mode-icon">🔍</div>
+                        <div>
+                            <div class="mode-title">Otomatik + Manuel Test</div>
+                            <div class="mode-badge" style="background:#fef3c7;color:#92400e;">DETAYLI</div>
+                        </div>
+                    </div>
+                    <div class="mode-desc">
+                        Otomatik testler + <strong>manuel kontrol listesi</strong> gösterilir. Görsel kontrol, yazdırma testi, veri kontrolü gibi gözle bakılması gereken testleri siz yaparsınız. 
+                        <strong>~5 dakika</strong> sürer. En kapsamlı test.
+                    </div>
+                </label>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" id="startBtn" onclick="proceedToUpload()">▶️ Testi Başlat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EKRAN 2: DOSYA YÜKLEME ==================== -->
+    <div id="uploadScreen" class="hidden">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 60px;">📁</div>
+                <h1>Dosya Seçin</h1>
+                <p class="subtitle" id="selectedModeText"></p>
+            </div>
+
+            <button class="btn btn-secondary" onclick="goBackToMode()" style="margin-bottom: 15px;">← Mod Değiştir</button>
+
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">index.html dosyasını seçmek için tıklayın</div>
+                <div class="upload-hint">veya dosyayı buraya sürükleyip bırakın</div>
+            </div>
+            <input type="file" id="fileInput" accept=".html,.htm" style="display:none;">
+
+            <div id="fileInfo" class="file-info hidden"></div>
+            <div id="progressSection" class="hidden">
+                <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+                <div class="progress-text" id="progressText">Hazırlanıyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EKRAN 3: OTOMATİK TEST SONUÇ ==================== -->
+    <div id="resultScreen" class="hidden">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 50px;">📊</div>
+                <h1>Otomatik Test Sonuçları</h1>
+                <p class="subtitle" id="testDate"></p>
+            </div>
+
+            <div class="result-summary" id="summary"></div>
+            <div id="statusBanner"></div>
+            <div class="test-list" id="testList"></div>
+
+            <div class="btn-row" id="resultButtons"></div>
+        </div>
+    </div>
+
+    <!-- ==================== EKRAN 4: MANUEL TEST ==================== -->
+    <div id="manualScreen" class="hidden">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 50px;">🔍</div>
+                <h1>Manuel Kontrol Listesi</h1>
+                <p class="subtitle">Otomatik testler tamamlandı. Şimdi gözle kontrol edin.</p>
+            </div>
+
+            <div class="manual-intro">
+                <h3>⚠️ Neden manuel test gerekli?</h3>
+                <p>
+                    Otomatik testler <strong>kodu</strong> kontrol eder. Ama bazı şeyler gözle bakılması gerekir: 
+                    <strong>görsel düzen</strong>, <strong>yazdırma işlemi</strong>, <strong>gerçek veri kaydetme</strong> gibi.
+                    Aşağıdaki listeyi sırayla kontrol edin ve gördüğünüz sorunları bana bildirin.
+                </p>
+            </div>
+
+            <div class="manual-progress">
+                İlerleme: <span class="num ok" id="manualOkCount">0</span> / <span class="num" id="manualTotalCount">0</span> tamamlandı
+                <div style="margin-top: 8px; font-size: 12px; color: #6b7280;">Kontrol ettiğiniz her maddeyi işaretleyin</div>
+            </div>
+
+            <div id="manualContent"></div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="finishManualTest()">✅ Kontrolü Tamamla</button>
+                <button class="btn btn-secondary" onclick="backToResult()">← Otomatik Sonuçlara Dön</button>
+                <button class="btn btn-info" onclick="copyAllResults()">📋 Tüm Sonuçları Kopyala</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EKRAN 5: FİNAL ==================== -->
+    <div id="finalScreen" class="hidden">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 50px;" id="finalIcon">✅</div>
+                <h1 id="finalTitle">Test Tamamlandı</h1>
+                <p class="subtitle" id="finalSubtitle"></p>
+            </div>
+            <div id="finalSummary"></div>
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="location.reload()">🔄 Yeni Test Yap</button>
+                <button class="btn btn-warning" onclick="copyAllResults()">📋 Tüm Sonuçları Kopyala</button>
+                <button class="btn btn-success" onclick="printResults()">🖨️ Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ==================== DURUM ====================
+let testMode = 'auto'; // 'auto' veya 'manual'
+let testResults = [];
+let manualChecklist = [];
+let manualCheckedCount = 0;
+let currentHTMLContent = '';
+
+// ==================== MOD SEÇİMİ ====================
+function selectMode(mode){
+    testMode = mode;
+    document.getElementById('modeAuto').classList.toggle('selected', mode === 'auto');
+    document.getElementById('modeManual').classList.toggle('selected', mode === 'manual');
+    document.querySelector('input[value="auto"]').checked = (mode === 'auto');
+    document.querySelector('input[value="manual"]').checked = (mode === 'manual');
+}
+
+function proceedToUpload(){
+    document.getElementById('modeScreen').classList.add('hidden');
+    document.getElementById('uploadScreen').classList.remove('hidden');
+    document.getElementById('selectedModeText').textContent = 
+        testMode === 'auto' ? '⚡ Sadece Otomatik Test Modu' : '🔍 Otomatik + Manuel Test Modu';
+}
+
+function goBackToMode(){
+    document.getElementById('modeScreen').classList.remove('hidden');
+    document.getElementById('uploadScreen').classList.add('hidden');
+}
+
+// ==================== DOSYA YÜKLEME ====================
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+async function handleFile(file){
+    document.getElementById('fileInfo').classList.remove('hidden');
+    document.getElementById('fileInfo').innerHTML = '📄 Yüklenen: <strong>' + file.name + '</strong> (' + Math.round(file.size/1024) + ' KB)';
+    document.getElementById('progressSection').classList.remove('hidden');
+    
+    updateProgress(5, 'Dosya okunuyor...');
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        currentHTMLContent = e.target.result;
+        updateProgress(15, 'HTML ayrıştırılıyor...');
+        await new Promise(r => setTimeout(r, 300));
+        await runTests(currentHTMLContent);
+    };
+    reader.readAsText(file, 'UTF-8');
+}
+
+function updateProgress(percent, text){
+    document.getElementById('progressBar').style.width = percent + '%';
+    document.getElementById('progressText').textContent = text;
+}
+
+// ==================== TEST ÇALIŞTIRICI ====================
+async function runTests(htmlContent){
+    testResults = [];
+    
+    try {
+        updateProgress(20, 'HTML analiz ediliyor...');
+        await new Promise(r => setTimeout(r, 200));
+        analyzeHTML(htmlContent);
+        
+        updateProgress(40, 'JavaScript kodu analiz ediliyor...');
+        await new Promise(r => setTimeout(r, 200));
+        analyzeJavaScript(htmlContent);
+        
+        updateProgress(60, 'Fonksiyonlar kontrol ediliyor...');
+        await new Promise(r => setTimeout(r, 200));
+        analyzeFunctions(htmlContent);
+        
+        updateProgress(80, 'HTML elementleri kontrol ediliyor...');
+        await new Promise(r => setTimeout(r, 200));
+        analyzeElements(htmlContent);
+        
+        updateProgress(90, 'Test modu başlatılıyor...');
+        await new Promise(r => setTimeout(r, 200));
+        await runInTestMode(htmlContent);
+        
+        updateProgress(100, 'Testler tamamlandı!');
+        await new Promise(r => setTimeout(r, 400));
+        showResults();
+        
+    } catch(e) {
+        alert('Test hatası: ' + e.message);
+        console.error(e);
+    }
+}
+
+// ==================== HTML ANALİZİ ====================
+function analyzeHTML(html){
+    test('HTML5 DOCTYPE tanımlı', () => {
+        if(!html.trim().toLowerCase().startsWith('<!doctype html>')) throw new Error('DOCTYPE eksik');
+    });
+    test('HTML lang="tr" tanımlı', () => {
+        if(!html.includes('lang="tr"')) throw new Error('lang="tr" bulunamadı');
+    });
+    test('UTF-8 charset tanımlı', () => {
+        if(!html.toLowerCase().includes('charset="utf-8"')) throw new Error('UTF-8 charset eksik');
+    });
+    test('Viewport meta tag var', () => {
+        if(!html.includes('name="viewport"')) throw new Error('viewport meta eksik');
+    });
+    test('Sayfa başlığı (title) var', () => {
+        if(!html.includes('<title>') || !html.includes('</title>')) throw new Error('title eksik');
+    });
+    test('Body etiketi var', () => {
+        if(!html.includes('<body') && !html.includes('<BODY')) throw new Error('body eksik');
+    });
+    test('Script etiketleri var (min 3)', () => {
+        const count = (html.match(/<script/g) || []).length;
+        if(count < 3) throw new Error('Çok az script: ' + count);
+    });
+    test('Tailwind CDN yüklü', () => {
+        if(!html.includes('tailwindcss.com')) throw new Error('Tailwind CDN yok');
+    });
+    test('PDF.js CDN yüklü', () => {
+        if(!html.includes('pdf.min.js') && !html.includes('pdfjs')) throw new Error('PDF.js yok');
+    });
+    test('Supabase CDN yüklü', () => {
+        if(!html.includes('supabase-js')) throw new Error('Supabase CDN yok');
+    });
+}
+
+// ==================== JAVASCRIPT ANALİZİ ====================
+function analyzeJavaScript(html){
+    test('Supabase URL tanımlı', () => {
+        if(!html.includes('SUPABASE_URL')) throw new Error('SUPABASE_URL yok');
+    });
+    test('Supabase Anon Key tanımlı', () => {
+        if(!html.includes('SUPABASE_ANON_KEY')) throw new Error('Anon key yok');
+    });
+    test('Supabase client oluşturuluyor', () => {
+        if(!html.includes('createClient')) throw new Error('createClient yok');
+    });
+    test('Admin kullanıcı tanımlı', () => {
+        if(!html.includes('ADMIN_USERNAME')) throw new Error('ADMIN_USERNAME yok');
+    });
+    test('İzleyici kullanıcı tanımlı', () => {
+        if(!html.includes('VIEWER_USERNAME')) throw new Error('VIEWER_USERNAME yok');
+    });
+    test('Global data objesi var', () => {
+        if(!html.match(/let\s+data\s*=\s*\{/)) throw new Error('data objesi yok');
+    });
+    test('data.statuses tanımlı', () => {
+        if(!html.includes('statuses:')) throw new Error('statuses yok');
+    });
+    test('data.personnel tanımlı', () => {
+        if(!html.includes('personnel:[') && !html.includes('personnel: [')) throw new Error('personnel yok');
+    });
+    test('data.clothing tanımlı', () => {
+        if(!html.includes('clothing:')) throw new Error('clothing yok');
+    });
+    test('data.kkds tanımlı', () => {
+        if(!html.includes('kkds:')) throw new Error('kkds yok');
+    });
+    test('data.tasks tanımlı', () => {
+        if(!html.includes('tasks:')) throw new Error('tasks yok');
+    });
+}
+
+// ==================== FONKSİYON ANALİZİ ====================
+function analyzeFunctions(html){
+    const functions = [
+        'loadSession', 'saveSession', 'clearSession', 'applyAuthUI', 'doLogin', 'handleLogout',
+        'saveToLocalStorage', 'persistData', 'loadFromLocalStorage', 'migrateData',
+        'showModal', 'hideModal', 'showSection', 'escapeHtml', 'normalize',
+        'updatePersonnelTable', 'showAddPersonnelModal', 'addPersonnel', 'editPersonnel', 'deletePersonnel', 'searchPersonnel',
+        'updateStockTables', 'updatePendingTables', 'openClothingModal', 'addClothing', 'giveSingleClothing', 'distributeKdd',
+        'updateTaskPage', 'updateActiveTaskTable', 'updateCompletedTaskTable', 'openTaskCompletionModal', 'confirmTaskCompletion', 'calculateTaskStatus',
+        'updateTrainingStats', 'updateCertificateStats', 'updateUpcomingTrainings',
+        'switchSettingsPanel', 'openStatusModal', 'openDepartmentModal', 'openTitleModal',
+        'openPrintPreview', 'doPrint', 'setPrintOrientation'
+    ];
+    
+    functions.forEach(fnName => {
+        test('Fonksiyon: ' + fnName + '()', () => {
+            const patterns = [
+                new RegExp('function\\s+' + fnName + '\\s*\\('),
+                new RegExp(fnName + '\\s*=\\s*async\\s*\\('),
+                new RegExp(fnName + '\\s*=\\s*function'),
+                new RegExp(fnName + '\\s*=\\s*\\([^)]*\\)\\s*=>'),
+                new RegExp('async\\s+function\\s+' + fnName + '\\s*\\('),
+                new RegExp('async\\s+' + fnName + '\\s*\\(')
+            ];
+            let found = false;
+            for(const p of patterns){
+                if(p.test(html)){ found = true; break; }
+            }
+            if(!found) throw new Error('Fonksiyon tanımlı değil');
+        });
+    });
+}
+
+// ==================== HTML ELEMENTS ANALİZİ ====================
+function analyzeElements(html){
+    const elements = [
+        'home', 'personnel', 'training', 'stock', 'tasks', 'settings',
+        'loginModal', 'addPersonnelModal', 'kddModal', 'clothingModal', 'trainingModal',
+        'certificateModal', 'reportModal', 'printPreviewModal', 'taskCompletionModal',
+        'lockIndicator', 'logoutBtn', 'syncStatus', 'personnelTable', 'stockTable',
+        'clothingStockTable', 'activeTaskTableBody', 'completedTaskTableBody',
+        'personnelSearchInput', 'printPreviewArea'
+    ];
+    
+    elements.forEach(id => {
+        test('Element: #' + id, () => {
+            if(!html.includes('id="' + id + '"') && !html.includes("id='" + id + "'")) {
+                throw new Error('Element bulunamadı');
+            }
+        });
+    });
+}
+
+// ==================== TEST MODUNDA ÇALIŞTIR ====================
+async function runInTestMode(html){
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.sandbox = 'allow-same-origin allow-scripts';
+    document.body.appendChild(iframe);
+    
+    try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(html);
+        iframeDoc.close();
+        
+        await new Promise(resolve => {
+            iframe.onload = resolve;
+            setTimeout(resolve, 3000);
+        });
+        
+        const iframeWindow = iframe.contentWindow;
+        
+        // Fonksiyon testleri
+        const testFunctions = [
+            ['escapeHtml', () => iframeWindow.escapeHtml('<script>')],
+            ['normalize', () => iframeWindow.normalize('İSTANBUL')],
+            ['similarity', () => iframeWindow.similarity('Test', 'Test')],
+            ['generateAutoTcNo', () => iframeWindow.generateAutoTcNo()],
+            ['calculateTaskStatus', () => iframeWindow.calculateTaskStatus({ nextDueDate: new Date(Date.now() + 86400000).toISOString() })]
+        ];
+        
+        testFunctions.forEach(([fnName, fn]) => {
+            test('Çalışma: ' + fnName + '()', () => {
+                if(typeof iframeWindow[fnName] !== 'function') throw new Error(fnName + ' çağrılamıyor');
+                const result = fn();
+                if(result === undefined || result === null) throw new Error(fnName + ' sonuç döndürmedi');
+            });
+        });
+        
+        // Update fonksiyonları
+        const updateFunctions = [
+            'updatePersonnelTable', 'updateStockTables', 'updatePendingTables', 'updateTaskPage',
+            'updateTrainingStats', 'updateCertificateStats', 'updateUpcomingTrainings',
+            'updateHomeActiveTasks', 'updateDistributionHistory', 'updateClothingList',
+            'updateCertificateList', 'updateTrainingList', 'updateTaskTemplateTable'
+        ];
+        
+        updateFunctions.forEach(fnName => {
+            test('Çalışma: ' + fnName + '()', () => {
+                if(typeof iframeWindow[fnName] !== 'function') throw new Error(fnName + ' çağrılamıyor');
+                iframeWindow[fnName]();
+            });
+        });
+        
+        // Modal testleri
+        ['kddModal', 'addPersonnelModal', 'reportModal', 'printPreviewModal'].forEach(modalId => {
+            test('Modal: ' + modalId, () => {
+                iframeWindow.showModal(modalId);
+                const modal = iframeDoc.getElementById(modalId);
+                if(!modal) throw new Error('Modal bulunamadı');
+                if(modal.classList.contains('hidden')) throw new Error('Açılmadı');
+                iframeWindow.hideModal(modalId);
+                if(!modal.classList.contains('hidden')) throw new Error('Kapanmadı');
+            });
+        });
+        
+        // Bölüm testleri
+        ['home', 'personnel', 'training', 'stock', 'tasks', 'settings'].forEach(sectionId => {
+            test('Bölüm: ' + sectionId, () => {
+                iframeWindow.showSection(sectionId);
+                const section = iframeDoc.getElementById(sectionId);
+                if(!section) throw new Error('Bölüm bulunamadı');
+                if(section.classList.contains('hidden')) throw new Error('Açılmadı');
+            });
+        });
+        
+        // Ayarlar panel testleri
+        ['panelPersonnel', 'panelTask', 'panelTraining', 'panelStock', 'panelCertificate', 'panelMyk', 'panelGorevTanim', 'panelBackup'].forEach(panelId => {
+            test('Panel: ' + panelId, () => {
+                iframeWindow.switchSettingsPanel(panelId);
+                const panel = iframeDoc.getElementById(panelId);
+                if(!panel) throw new Error('Panel bulunamadı');
+                if(!panel.classList.contains('active')) throw new Error('Aktif değil');
+            });
+        });
+        
+    } catch(e){
+        test('iframe testleri', () => {
+            throw new Error('iframe hatası: ' + e.message);
+        });
+    } finally {
+        setTimeout(() => iframe.remove(), 100);
+    }
+}
+
+// ==================== TEST ÇALIŞTIRICI ====================
+function test(name, fn){
+    const startTime = performance.now();
+    try {
+        fn();
+        testResults.push({
+            name,
+            status: 'ok',
+            duration: Math.round((performance.now() - startTime) * 100) / 100
+        });
+    } catch(e){
+        testResults.push({
+            name,
+            status: 'error',
+            error: e.message,
+            duration: Math.round((performance.now() - startTime) * 100) / 100
+        });
+    }
+}
+
+// ==================== OTOMATİK SONUÇ GÖSTER ====================
+function showResults(){
+    document.getElementById('uploadScreen').classList.add('hidden');
+    document.getElementById('resultScreen').classList.remove('hidden');
+    
+    const okCount = testResults.filter(r => r.status === 'ok').length;
+    const errCount = testResults.filter(r => r.status === 'error').length;
+    const successRate = testResults.length > 0 ? Math.round((okCount / testResults.length) * 100) : 0;
+    
+    document.getElementById('testDate').textContent = new Date().toLocaleString('tr-TR');
+    
+    document.getElementById('summary').innerHTML = `
+        <div class="stat-card stat-ok">
+            <div class="stat-number">${okCount}</div>
+            <div class="stat-label">✅ Başarılı</div>
+        </div>
+        <div class="stat-card stat-err">
+            <div class="stat-number">${errCount}</div>
+            <div class="stat-label">❌ Hatalı</div>
+        </div>
+        <div class="stat-card stat-total">
+            <div class="stat-number">${testResults.length}</div>
+            <div class="stat-label">📊 Toplam</div>
+        </div>
+        <div class="stat-card stat-rate">
+            <div class="stat-number">%${successRate}</div>
+            <div class="stat-label">🎯 Başarı</div>
+        </div>
+    `;
+    
+    const statusBanner = document.getElementById('statusBanner');
+    if(errCount === 0){
+        statusBanner.innerHTML = '<div class="status-banner status-success">🎉 TEBRİKLER! Tüm otomatik testler başarılı!</div>';
+    } else {
+        statusBanner.innerHTML = '<div class="status-banner status-error">⚠️ ' + errCount + ' test başarısız!</div>';
+    }
+    
+    // Test listesi - gruplu
+    let listHTML = '';
+    
+    const groups = {
+        'HTML Yapısı': testResults.filter(r => /DOCTYPE|lang|charset|viewport|title|Body|Script etiketleri|Tailwind|PDF\.js|Supabase CDN/i.test(r.name)),
+        'JavaScript Değişkenleri': testResults.filter(r => /Supabase URL|Anon Key|createClient|Admin kullanıcı|İzleyici|data objesi|data\./i.test(r.name)),
+        'Fonksiyonlar': testResults.filter(r => /Fonksiyon:/i.test(r.name)),
+        'HTML Elementleri': testResults.filter(r => /Element:/i.test(r.name)),
+        'Çalışma Testleri': testResults.filter(r => /Çalışma:/i.test(r.name)),
+        'Modal Testleri': testResults.filter(r => /Modal:/i.test(r.name)),
+        'Bölüm Testleri': testResults.filter(r => /Bölüm:/i.test(r.name)),
+        'Panel Testleri': testResults.filter(r => /Panel:/i.test(r.name))
+    };
+    
+    Object.keys(groups).forEach(groupName => {
+        const items = groups[groupName];
+        if(items.length === 0) return;
+        
+        listHTML += '<div class="section-title">' + groupName + ' (' + items.length + ')</div>';
+        
+        items.forEach(r => {
+            const icon = r.status === 'ok' ? '✅' : '❌';
+            const cls = r.status === 'ok' ? 'test-item-ok' : 'test-item-err';
+            listHTML += '<div class="test-item ' + cls + '">';
+            listHTML += '<div class="test-name">' + icon + ' ' + escapeHtml(r.name);
+            if(r.error) listHTML += '<div class="test-error">⚡ ' + escapeHtml(r.error) + '</div>';
+            listHTML += '</div>';
+            listHTML += '<div class="test-time">' + r.duration + 'ms</div>';
+            listHTML += '</div>';
+        });
+    });
+    
+    document.getElementById('testList').innerHTML = listHTML;
+    
+    // Butonlar
+    const buttonsHTML = testMode === 'manual' 
+        ? `
+            <button class="btn btn-info" onclick="goToManualTest()">🔍 Manuel Teste Geç</button>
+            <button class="btn btn-warning" onclick="copyAllResults()">📋 Sonuçları Kopyala</button>
+            <button class="btn btn-secondary" onclick="location.reload()">🔄 Yeni Test</button>
+        `
+        : `
+            <button class="btn btn-warning" onclick="copyAllResults()">📋 Sonuçları Kopyala</button>
+            <button class="btn btn-success" onclick="printResults()">🖨️ Yazdır</button>
+            <button class="btn btn-secondary" onclick="location.reload()">🔄 Yeni Test</button>
+        `;
+    document.getElementById('resultButtons').innerHTML = buttonsHTML;
+}
+
+// ==================== MANUEL TEST ====================
+function goToManualTest(){
+    // Manuel kontrol listesini oluştur
+    manualChecklist = [
+        {
+            group: '🎨 Görsel Kontrol',
+            items: [
+                { id: 'm1', text: '<strong>Ana sayfa düzgün görünüyor mu?</strong> — Sayfa açıldığında kilit ekranı görünüyor mu?' },
+                { id: 'm2', text: '<strong>Menü butonları hizalı mı?</strong> — Ana Sayfa, Personel, Eğitim, Stok, Görevler, Ayarlar sıralı mı?' },
+                { id: 'm3', text: '<strong>Renkler yerinde mi?</strong> — Mavi/mor gradient header görünüyor mu?' },
+                { id: 'm4', text: '<strong>Yazılar okunuyor mu?</strong> — Hiçbir yerde "undefined" veya "NaN" yazmıyor mu?' },
+                { id: 'm5', text: '<strong>İkonlar yükleniyor mu?</strong> — 🏢 ATTİ logosu ve emoji ikonlar görünüyor mu?' }
+            ]
+        },
+        {
+            group: '🔐 Giriş Kontrol',
+            items: [
+                { id: 'm6', text: '<strong>Kilit ekranı çalışıyor mu?</strong> — "🔒 Giriş Yap" butonuna tıklayınca modal açılıyor mu?' },
+                { id: 'm7', text: '<strong>Yanlış şifre reddediliyor mu?</strong> — Yanlış şifre girince hata mesajı çıkıyor mu?' },
+                { id: 'm8', text: '<strong>Doğru şifre kabul ediliyor mu?</strong> — gokhangoker / 2621556 ile giriş yapılıyor mu?' },
+                { id: 'm9', text: '<strong>Çıkış yapılıyor mu?</strong> — 🚪 Çıkış butonu ile çıkış yapılıyor mu?' }
+            ]
+        },
+        {
+            group: '👥 Personel Kontrol',
+            items: [
+                { id: 'm10', text: '<strong>Personel tablosu boş mu?</strong> — Veri yoksa "Kayıt yok" veya boş tablo görünüyor mu?' },
+                { id: 'm11', text: '<strong>Yeni personel ekleme çalışıyor mu?</strong> — ➕ Yeni Personel Ekle modal açılıyor mu?' },
+                { id: 'm12', text: '<strong>Personel arama çalışıyor mu?</strong> — Arama kutusuna yazınca filtre çalışıyor mu?' },
+                { id: 'm13', text: '<strong>Personel filtre çalışıyor mu?</strong> — Tablo başlıklarına tıklayınca filtre menüsü açılıyor mu?' }
+            ]
+        },
+        {
+            group: '🖨️ Yazdırma Kontrol',
+            items: [
+                { id: 'm14', text: '<strong>Yazdırma önizlemesi açılıyor mu?</strong> — Herhangi bir yazdır butonuna basınca modal açılıyor mu?' },
+                { id: 'm15', text: '<strong>İçerik düzgün görünüyor mu?</strong> — Yazdırma önizlemesi boş değil mi?' },
+                { id: 'm16', text: '<strong>Sayfa yönü değişiyor mu?</strong> — Dikey/Yatay butonları çalışıyor mu?' }
+            ]
+        },
+        {
+            group: '💾 Veri Kontrol',
+            items: [
+                { id: 'm17', text: '<strong>F12 → Console temiz mi?</strong> — Konsolda kırmızı hata var mı?' },
+                { id: 'm18', text: '<strong>Senkronizasyon çalışıyor mu?</strong> — Sağ üstte "✅ Kaydedildi" yazıyor mu?' },
+                { id: 'm19', text: '<strong>Sayfa yenilenince veri duruyor mu?</strong> — F5 basınca veriler kayboluyor mu?' }
+            ]
+        },
+        {
+            group: '🌐 Tarayıcı Kontrol',
+            items: [
+                { id: 'm20', text: '<strong>Farklı tarayıcıda çalışıyor mu?</strong> — Chrome/Edge/Firefox\'ta deneyin' }
+            ]
+        }
+    ];
+    
+    manualCheckedCount = 0;
+    const totalItems = manualChecklist.reduce((sum, g) => sum + g.items.length, 0);
+    document.getElementById('manualTotalCount').textContent = totalItems;
+    
+    let html = '';
+    manualChecklist.forEach(group => {
+        html += '<div class="manual-section">';
+        html += '<div class="manual-section-title">' + group.group + '</div>';
+        group.items.forEach(item => {
+            html += '<label class="manual-item" id="item_' + item.id + '">';
+            html += '<input type="checkbox" data-item-id="' + item.id + '" onchange="toggleManualItem(this)">';
+            html += '<div class="manual-item-text">' + item.text + '</div>';
+            html += '</label>';
+        });
+        html += '</div>';
+    });
+    document.getElementById('manualContent').innerHTML = html;
+    
+    document.getElementById('resultScreen').classList.add('hidden');
+    document.getElementById('manualScreen').classList.remove('hidden');
+}
+
+function toggleManualItem(cb){
+    const item = cb.closest('.manual-item');
+    if(cb.checked){
+        item.classList.add('checked');
+        manualCheckedCount++;
+    } else {
+        item.classList.remove('checked');
+        manualCheckedCount--;
+    }
+    document.getElementById('manualOkCount').textContent = manualCheckedCount;
+}
+
+function backToResult(){
+    document.getElementById('resultScreen').classList.remove('hidden');
+    document.getElementById('manualScreen').classList.add('hidden');
+}
+
+function finishManualTest(){
+    const totalItems = manualChecklist.reduce((sum, g) => sum + g.items.length, 0);
+    
+    document.getElementById('manualScreen').classList.add('hidden');
+    document.getElementById('finalScreen').classList.remove('hidden');
+    
+    const okAutoCount = testResults.filter(r => r.status === 'ok').length;
+    const errAutoCount = testResults.filter(r => r.status === 'error').length;
+    
+    const allOk = errAutoCount === 0 && manualCheckedCount === totalItems;
+    
+    document.getElementById('finalIcon').textContent = allOk ? '🎉' : '⚠️';
+    document.getElementById('finalTitle').textContent = allOk ? 'Mükemmel! Her Şey Çalışıyor!' : 'İnceleme Gerekli';
+    document.getElementById('finalSubtitle').textContent = allOk 
+        ? 'Tüm testler başarıyla tamamlandı.' 
+        : 'Bazı sorunlar tespit edildi. Aşağıdaki özeti inceleyin.';
+    
+    document.getElementById('finalSummary').innerHTML = `
+        <div class="result-summary" style="margin-bottom:20px;">
+            <div class="stat-card stat-ok">
+                <div class="stat-number">${okAutoCount}</div>
+                <div class="stat-label">✅ Otomatik OK</div>
+            </div>
+            <div class="stat-card stat-err">
+                <div class="stat-number">${errAutoCount}</div>
+                <div class="stat-label">❌ Otomatik Hata</div>
+            </div>
+            <div class="stat-card stat-total">
+                <div class="stat-number">${manualCheckedCount}/${totalItems}</div>
+                <div class="stat-label">🔍 Manuel Kontrol</div>
+            </div>
+        </div>
+        <div class="${allOk ? 'manual-ok' : 'manual-note'}">
+            ${allOk 
+                ? '✅ Sistem sağlıklı çalışıyor. Yeni sürümü kullanmaya başlayabilirsiniz.' 
+                : '⚠️ Bazı testler geçmedi veya manuel kontroller eksik. Sonuçları kopyalayıp bana gönderin.'}
+        </div>
+    `;
+}
+
+// ==================== YARDIMCILAR ====================
+function escapeHtml(s){
+    if(!s) return '';
+    return s.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function copyAllResults(){
+    const okAutoCount = testResults.filter(r => r.status === 'ok').length;
+    const errAutoCount = testResults.filter(r => r.status === 'error').length;
+    const successRate = testResults.length > 0 ? Math.round((okAutoCount / testResults.length) * 100) : 0;
+    const totalManual = manualChecklist.reduce((sum, g) => sum + g.items.length, 0);
+    
+    let text = '🧪 TEST SONUÇLARI — ' + (testMode === 'auto' ? 'Otomatik' : 'Otomatik + Manuel') + '\n';
+    text += '━'.repeat(50) + '\n';
+    text += 'Tarih: ' + new Date().toLocaleString('tr-TR') + '\n';
+    text += 'Mod: ' + (testMode === 'auto' ? '⚡ Sadece Otomatik' : '🔍 Otomatik + Manuel') + '\n';
+    text += '━'.repeat(50) + '\n\n';
+    
+    text += '📊 OTOMATİK TEST ÖZETİ\n';
+    text += 'Toplam: ' + testResults.length + ' | ✅ ' + okAutoCount + ' | ❌ ' + errAutoCount + ' | Başarı: %' + successRate + '\n\n';
+    
+    if(errAutoCount > 0){
+        text += '❌ BAŞARISIZ OTOMATİK TESTLER:\n';
+        testResults.filter(r => r.status === 'error').forEach(r => {
+            text += '  ❌ ' + r.name + '\n';
+            if(r.error) text += '     ⚡ ' + r.error + '\n';
+        });
+        text += '\n';
+    }
+    
+    if(testMode === 'manual'){
+        text += '🔍 MANUEL KONTROL SONUÇLARI\n';
+        text += 'Tamamlanan: ' + manualCheckedCount + ' / ' + totalManual + '\n\n';
+        
+        manualChecklist.forEach(group => {
+            text += group.group + ':\n';
+            group.items.forEach(item => {
+                const cb = document.querySelector('input[data-item-id="' + item.id + '"]');
+                const checked = cb && cb.checked;
+                text += '  ' + (checked ? '✅' : '⬜') + ' ' + item.text.replace(/<[^>]*>/g, '') + '\n';
+            });
+            text += '\n';
+        });
+    }
+    
+    text += '━'.repeat(50) + '\n';
+    text += 'NOT: Bu sonuçları geliştiriciye gönderin.\n';
+    
+    navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Tüm sonuçlar panoya kopyalandı!\n\nŞimdi sohbete yapıştırın (Ctrl+V).');
+    }).catch(err => {
+        // Fallback: textarea ile kopyala
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); alert('✅ Kopyalandı!'); }
+        catch(e){ alert('❌ Kopyalama başarısız. Elle kopyalayın:\n\n' + text); }
+        document.body.removeChild(ta);
+    });
+}
+
+function printResults(){
+    window.print();
+}
+</script>
+</body>
+</html>
